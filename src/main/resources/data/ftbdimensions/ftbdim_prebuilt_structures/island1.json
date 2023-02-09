@@ -1,0 +1,7 @@
+{
+  "id": "ftbdimensions:island1",
+  "structure": "ftbdimensions:spawn/island1",
+  "name": "Simple Island",
+  "structure_set": "ftbdimensions:default",
+  "height": 64
+}

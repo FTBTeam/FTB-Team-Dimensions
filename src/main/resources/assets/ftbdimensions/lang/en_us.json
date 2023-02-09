@@ -1,0 +1,11 @@
+{
+  "block.ftbdimensions.portal": "FTB Dimensions Portal",
+  "screens.ftbdimensions.back": "Back",
+  "screens.ftbdimensions.by": "By: %s",
+  "screens.ftbdimensions.close": "Close",
+  "screens.ftbdimensions.create": "Create",
+  "screens.ftbdimensions.select": "Select",
+  "screens.ftbdimensions.select_start": "Select a start",
+  "screens.ftbdimensions.select_start_group": "Select a group",
+  "screens.ftbdimensions.selected_start": "Selected start"
+}
