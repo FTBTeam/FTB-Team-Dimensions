@@ -12,5 +12,6 @@ jobs:
     with:
       curse-publish-task: ""
       maven-private: true
+      maven-snapshots: true
     secrets:
       ftb-maven-token: ${{ secrets.FTB_MAVEN_TOKEN }}
