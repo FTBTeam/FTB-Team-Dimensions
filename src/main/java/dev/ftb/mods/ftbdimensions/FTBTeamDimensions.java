@@ -23,12 +23,12 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(FTBDimensions.MOD_ID)
-public class FTBDimensions {
+@Mod(FTBTeamDimensions.MOD_ID)
+public class FTBTeamDimensions {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "ftbdimensions";
 
-    public FTBDimensions() {
+    public FTBTeamDimensions() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FTBDimensionsConfig.COMMON_CONFIG);
 
         IEventBus MOD_BUS = FMLJavaModLoadingContext.get().getModEventBus();

@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbdimensions.dimensions.level;
 
 import com.google.common.collect.ImmutableMap;
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbteams.data.Team;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -21,17 +21,13 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class DimensionStorage extends SavedData {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String SAVE_NAME = new ResourceLocation(FTBDimensions.MOD_ID, "dimension_store").toString().replace(":", "_");
+    private static final String SAVE_NAME = new ResourceLocation(FTBTeamDimensions.MOD_ID, "dimension_store").toString().replace(":", "_");
 
     private final HashMap<UUID, ResourceLocation> teamToDimension = new HashMap<>();
     private final HashMap<ResourceLocation, BlockPos> dimensionSpawnLocations = new HashMap<>();
@@ -71,7 +67,7 @@ public class DimensionStorage extends SavedData {
     }
 
     public ResourceKey<Level> putDimension(Team playerTeam, String generateDimensionName) {
-        return putDimension(playerTeam, new ResourceLocation(FTBDimensions.MOD_ID, "team/%s".formatted(generateDimensionName)));
+        return putDimension(playerTeam, new ResourceLocation(FTBTeamDimensions.MOD_ID, "team/%s".formatted(generateDimensionName)));
     }
 
     public ResourceKey<Level> putDimension(Team playerTeam, ResourceLocation generateDimensionName) {

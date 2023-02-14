@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbdimensions.dimensions;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbdimensions.dimensions.level.ArchivedDimension;
 import dev.ftb.mods.ftbdimensions.dimensions.net.CreateDimensionForTeam;
 import dev.ftb.mods.ftbdimensions.dimensions.screen.StartSelectScreen;
@@ -41,7 +41,7 @@ public class DimensionsClient {
     }
 
     public static void init() {
-        DimensionSpecialEffects.EFFECTS.put(new ResourceLocation(FTBDimensions.MOD_ID, "stoneblock"), new StoneblockDimensionSpecialEffects());
+        DimensionSpecialEffects.EFFECTS.put(new ResourceLocation(FTBTeamDimensions.MOD_ID, "stoneblock"), new StoneblockDimensionSpecialEffects());
     }
 
     public static void exportBiomes(ServerLevel level, Path path, int radius) {

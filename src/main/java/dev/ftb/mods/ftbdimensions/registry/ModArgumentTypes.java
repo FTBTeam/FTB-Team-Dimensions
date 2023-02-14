@@ -1,6 +1,6 @@
 package dev.ftb.mods.ftbdimensions.registry;
 
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbdimensions.dimensions.arguments.DimensionCommandArgument;
 import dev.ftb.mods.ftbdimensions.dimensions.arguments.PrebuiltCommandArgument;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -12,7 +12,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModArgumentTypes {
     public static final DeferredRegister<ArgumentTypeInfo<?,?>> ARGUMENT_TYPES
-            = DeferredRegister.create(ForgeRegistries.Keys.COMMAND_ARGUMENT_TYPES, FTBDimensions.MOD_ID);
+            = DeferredRegister.create(ForgeRegistries.Keys.COMMAND_ARGUMENT_TYPES, FTBTeamDimensions.MOD_ID);
 
     private static final RegistryObject<ArgumentTypeInfo<?,?>> PREBUILT_COMMAND
             = ARGUMENT_TYPES.register("prebuilt", () -> ArgumentTypeInfos.registerByClass(PrebuiltCommandArgument.class, SingletonArgumentInfo.contextFree(PrebuiltCommandArgument::create)));

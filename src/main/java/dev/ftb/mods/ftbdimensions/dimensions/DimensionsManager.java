@@ -1,8 +1,8 @@
 package dev.ftb.mods.ftbdimensions.dimensions;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
 import dev.ftb.mods.ftbdimensions.FTBDimensionsCommands;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbdimensions.dimensions.level.DimensionCreatedEvent;
 import dev.ftb.mods.ftbdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbdimensions.dimensions.level.DynamicDimensionManager;
@@ -82,7 +82,7 @@ public enum DimensionsManager {
                             BlockPos spawnPos = DimensionStorage.get(player.server).getDimensionSpawnLocations(serverLevel.getLevel().dimension().location());
                             if (spawnPos == null) {
                                 DimensionStorage.get(player.server).addDimensionSpawn(serverLevel.getLevel().dimension().location(), blockPos);
-                                FTBDimensions.LOGGER.info("Adding spawn to dim storage");
+                                FTBTeamDimensions.LOGGER.info("Adding spawn to dim storage");
                             }
 
                             return blockPos;

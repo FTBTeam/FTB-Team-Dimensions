@@ -1,6 +1,6 @@
 package dev.ftb.mods.ftbdimensions.registry;
 
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbdimensions.portal.content.FTBDimensionsPortalBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -12,8 +12,8 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.List;
 
 public interface ModBlocks {
-    DeferredRegister<Block> BLOCK_REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCKS, FTBDimensions.MOD_ID);
-    DeferredRegister<Item> ITEM_REGISTRY = DeferredRegister.create(ForgeRegistries.ITEMS, FTBDimensions.MOD_ID);
+    DeferredRegister<Block> BLOCK_REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCKS, FTBTeamDimensions.MOD_ID);
+    DeferredRegister<Item> ITEM_REGISTRY = DeferredRegister.create(ForgeRegistries.ITEMS, FTBTeamDimensions.MOD_ID);
 
     List<DeferredRegister<?>> REGISTERS = List.of(
             BLOCK_REGISTRY, ITEM_REGISTRY

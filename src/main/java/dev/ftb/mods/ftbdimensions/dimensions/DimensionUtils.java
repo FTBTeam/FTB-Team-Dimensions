@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbdimensions.dimensions;
 
 import com.google.common.collect.ImmutableList;
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.block.Blocks;
@@ -20,7 +20,7 @@ public class DimensionUtils {
 
         for (var info : template.filterBlocks(BlockPos.ZERO, placeSettings, Blocks.STRUCTURE_BLOCK)) {
             if (info.nbt != null && StructureMode.valueOf(info.nbt.getString("mode")) == StructureMode.DATA) {
-                FTBDimensions.LOGGER.info("Found data block at [{}] with data [{}]", info.pos, info.nbt.getString("metadata"));
+                FTBTeamDimensions.LOGGER.info("Found data block at [{}] with data [{}]", info.pos, info.nbt.getString("metadata"));
 
                 if (info.nbt.getString("metadata").equalsIgnoreCase("spawn_point")) {
                     spawnPos = info.pos;

@@ -8,3 +8,4 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+rootProject.name = "FTB-Team-Dimensions-1.19.2"

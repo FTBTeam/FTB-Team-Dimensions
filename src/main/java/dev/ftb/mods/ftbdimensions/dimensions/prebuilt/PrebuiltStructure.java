@@ -3,14 +3,14 @@ package dev.ftb.mods.ftbdimensions.dimensions.prebuilt;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbdimensions.dimensions.level.DynamicDimensionManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public record PrebuiltStructure(ResourceLocation id, ResourceLocation structureLocation, Component name, String author, ResourceLocation structureSetId, int height, ResourceLocation dimensionType) {
-    public static final ResourceLocation DEFAULT_IMAGE = new ResourceLocation(FTBDimensions.MOD_ID, "textures/default_start.png");
+    public static final ResourceLocation DEFAULT_IMAGE = new ResourceLocation(FTBTeamDimensions.MOD_ID, "textures/default_start.png");
 
     public static PrebuiltStructure fromJson(JsonElement element) {
         JsonObject json = element.getAsJsonObject();

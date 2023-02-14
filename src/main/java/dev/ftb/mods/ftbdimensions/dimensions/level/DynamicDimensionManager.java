@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.math.Vector3d;
 import com.mojang.serialization.Lifecycle;
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbdimensions.dimensions.net.UpdateDimensionsList;
 import dev.ftb.mods.ftbdimensions.dimensions.prebuilt.PrebuiltStructure;
 import dev.ftb.mods.ftbdimensions.dimensions.prebuilt.PrebuiltStructureManager;
@@ -38,8 +38,8 @@ import java.util.Map;
  * See original DynamicDimensionManager in RF Tools Dimensions for comments and more generic example.
  */
 public class DynamicDimensionManager {
-	public static final ResourceLocation DEFAULT_STRUCTURE_SET = FTBDimensions.rl( "default");
-	public static final ResourceLocation DEFAULT_DIMENSION_TYPE = FTBDimensions.rl("default");
+	public static final ResourceLocation DEFAULT_STRUCTURE_SET = FTBTeamDimensions.rl( "default");
+	public static final ResourceLocation DEFAULT_DIMENSION_TYPE = FTBTeamDimensions.rl("default");
 
 	public static ServerLevel create(MinecraftServer server, ResourceKey<Level> key, ResourceLocation prebuiltStructureId) {
 		@SuppressWarnings("deprecation")
@@ -155,7 +155,7 @@ public class DynamicDimensionManager {
 			try {
 				FileUtils.deleteDirectory(dimensionPath.toFile());
 			} catch (IOException e) {
-				FTBDimensions.LOGGER.error("Failed to delete dimension file for {} at {}", key, dimensionPath, e);
+				FTBTeamDimensions.LOGGER.error("Failed to delete dimension file for {} at {}", key, dimensionPath, e);
 			}
 		}
 
@@ -190,7 +190,7 @@ public class DynamicDimensionManager {
 			}
 			return true;
 		} else {
-			FTBDimensions.LOGGER.error("Failed to teleport " + player.getScoreboardName() + " to " + key.location());
+			FTBTeamDimensions.LOGGER.error("Failed to teleport " + player.getScoreboardName() + " to " + key.location());
 			return false;
 		}
 	}

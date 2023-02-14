@@ -2,10 +2,10 @@ package dev.ftb.mods.ftbdimensions.dimensions.net;
 
 import dev.architectury.networking.simple.MessageType;
 import dev.architectury.networking.simple.SimpleNetworkManager;
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 
 public class FTBDimensionsNet {
-    public static final SimpleNetworkManager NET = SimpleNetworkManager.create(FTBDimensions.MOD_ID);
+    public static final SimpleNetworkManager NET = SimpleNetworkManager.create(FTBTeamDimensions.MOD_ID);
 
     public static final MessageType SYNC_ARCHIVED_DIMENSIONS = NET.registerS2C("sync_archived_dimensions", SyncArchivedDimensions::new);
     public static final MessageType SHOW_SELECTION_GUI = NET.registerS2C("show_start_selection", ShowSelectionGui::new);

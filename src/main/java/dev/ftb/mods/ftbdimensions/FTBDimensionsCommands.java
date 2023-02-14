@@ -37,7 +37,7 @@ public class FTBDimensionsCommands {
     public static final DynamicCommandExceptionType NO_DIM = new DynamicCommandExceptionType((object) -> Component.literal("No dimension found for %s".formatted(object)));
 
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
-        FTBDimensions.LOGGER.info("Registering FTB Dimensions Commands");
+        FTBTeamDimensions.LOGGER.info("Registering FTB Dimensions Commands");
 
         LiteralCommandNode<CommandSourceStack> commands = commandDispatcher.register(Commands.literal("ftbdimensions")
                 .then(Commands.literal("visit")

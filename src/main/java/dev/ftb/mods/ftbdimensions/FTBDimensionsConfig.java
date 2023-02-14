@@ -26,7 +26,7 @@ public class FTBDimensionsConfig {
 
             this.lobbyStructure = COMMON_BUILDER
                     .comment("Resource location of the structure NBT for the lobby")
-                    .define("lobbyStructure", FTBDimensions.MOD_ID + ":lobby");
+                    .define("lobbyStructure", FTBTeamDimensions.MOD_ID + ":lobby");
 
             COMMON_BUILDER.pop();
         }

@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbdimensions.registry;
 
 import com.mojang.serialization.Codec;
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbdimensions.dimensions.level.structure.PrebuiltStartStructure;
 import dev.ftb.mods.ftbdimensions.dimensions.level.structure.PrebuiltStartStructurePiece;
 import net.minecraft.core.Registry;
@@ -13,9 +13,9 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModWorldGen {
     public static final DeferredRegister<StructureType<?>> STRUCTURE_TYPES
-            = DeferredRegister.create(Registry.STRUCTURE_TYPE_REGISTRY, FTBDimensions.MOD_ID);
+            = DeferredRegister.create(Registry.STRUCTURE_TYPE_REGISTRY, FTBTeamDimensions.MOD_ID);
     public static final DeferredRegister<StructurePieceType> STRUCTURE_PIECE_TYPES
-            = DeferredRegister.create(Registry.STRUCTURE_PIECE_REGISTRY, FTBDimensions.MOD_ID);
+            = DeferredRegister.create(Registry.STRUCTURE_PIECE_REGISTRY, FTBTeamDimensions.MOD_ID);
 
     public static final RegistryObject<StructureType<PrebuiltStartStructure>> START_STRUCTURE
             = STRUCTURE_TYPES.register("start", () -> explicitStructureTypeTyping(PrebuiltStartStructure.CODEC));

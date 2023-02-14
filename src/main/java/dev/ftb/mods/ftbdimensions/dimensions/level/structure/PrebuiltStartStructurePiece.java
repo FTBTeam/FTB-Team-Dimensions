@@ -1,8 +1,7 @@
 package dev.ftb.mods.ftbdimensions.dimensions.level.structure;
 
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbdimensions.dimensions.DimensionUtils;
-import dev.ftb.mods.ftbdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbdimensions.registry.ModWorldGen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -36,9 +35,9 @@ public class PrebuiltStartStructurePiece extends TemplateStructurePiece {
 			level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
 			level.getLevel().getServer().getGameRules().getRule(GameRules.RULE_SPAWN_RADIUS).set(0, level.getLevel().getServer());
 
-			FTBDimensions.LOGGER.info("Found valid spawn marker at [{}] and setting for [{}]", pos, level.getLevel().dimension());
+			FTBTeamDimensions.LOGGER.info("Found valid spawn marker at [{}] and setting for [{}]", pos, level.getLevel().dimension());
 		} else {
-			FTBDimensions.LOGGER.warn("No spawn_point tag found on data marker");
+			FTBTeamDimensions.LOGGER.warn("No spawn_point tag found on data marker");
 		}
 	}
 }

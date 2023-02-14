@@ -2,7 +2,7 @@ package dev.ftb.mods.ftbdimensions.dimensions.level.structure;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.ftb.mods.ftbdimensions.FTBDimensions;
+import dev.ftb.mods.ftbdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbdimensions.dimensions.DimensionUtils;
 import dev.ftb.mods.ftbdimensions.dimensions.level.PrebuiltStructureProvider;
 import dev.ftb.mods.ftbdimensions.dimensions.prebuilt.PrebuiltStructureManager;
@@ -57,7 +57,7 @@ public class PrebuiltStartStructure extends Structure {
 		}).orElse(Optional.empty());
 
 		if (res.isEmpty()) {
-			FTBDimensions.LOGGER.warn("Unable to find [{}] in the prebuilt structure list", provider.getPrebuiltStructureId());
+			FTBTeamDimensions.LOGGER.warn("Unable to find [{}] in the prebuilt structure list", provider.getPrebuiltStructureId());
 		}
 
 		return res;
