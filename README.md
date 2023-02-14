@@ -17,25 +17,25 @@ prebuilt "islands" which will be pre-generated in the new dimension (always at t
 `ftbdim_prebuilt_structures` datapack type, which defines which structures are available to the player (when the player
 first enters the lobby portal, one entry per known `ftbdim_prebuilt_structures` will be shown in the GUI).
 
-The default prebuilt structure (`data/ftbdimensions/ftbdim_prebuilt_structures/island1.json`) looks like this:
+The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structures/island1.json`) looks like this:
 
 ```json
 {
-  "id": "ftbdimensions:island1",
-  "structure": "ftbdimensions:spawn/island1",
+  "id": "ftbteamdimensions:island1",
+  "structure": "ftbteamdimensions:spawn/island1",
   "name": "Simple Island",
-  "structure_set": "ftbdimensions:default",
+  "structure_set": "ftbteamdimensions:default",
   "height": 64,
-  "dimension_type": "ftbdimensions:default"
+  "dimension_type": "ftbteamdimensions:default"
 }
 ```
 
 * "id" field is mandatory, unique, and should correspond to the JSON filename.
-* "structure" field is mandatory and determines the NBT structure file which will be generated (see `data/ftbdimensions/structures/spawn/island1.json`).
+* "structure" field is mandatory and determines the NBT structure file which will be generated (see `data/ftbteamdimensions/structures/spawn/island1.json`).
 * "name" field is mandatory and is the name displayed in the player's GUI when selecting a structure (this can be a translation key).
 * "author" field is optional and defaults to "FTB Team". It is displayed as "by ..." in the player's GUI when selecting a structure.
-* "structure_set" field is optional and is the structure set tag to use; it defaults to `ftbdimensions:default`, which includes only the structure set `ftbdimensions:start`.
+* "structure_set" field is optional and is the structure set tag to use; it defaults to `ftbteamdimensions:default`, which includes only the structure set `ftbteamdimensions:start`.
   * This controls which structure set(s) will be used during generation of the dimension. 
 * "height" is optional, and controls the absolute Y-level at which spawn islands are generated. It defaults to 64. **TODO support for surface-relative Y values**.
-* "dimension_type" is optional, and determines the dimension type used for created dimensions. It defaults to `ftbdimensions:default`, an overworld-like dimension type.
+* "dimension_type" is optional, and determines the dimension type used for created dimensions. It defaults to `ftbteamdimensions:default`, an overworld-like dimension type.
 

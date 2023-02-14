@@ -22,7 +22,7 @@ loom {
         // specify the mixin configs used in this mod
         // this will be added to the jar manifest as well!
         mixinConfigs = [
-                "ftbdimensions.mixins.json"
+                "ftbteamdimensions.mixins.json"
         ]
         dataGen {
             mod project.mod_id
@@ -98,6 +98,8 @@ jar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId = project.archivesBaseName
+            version ftbPublishing.mavenVersion
             // add all the jars that should be included when publishing to maven
             artifact(remapJar) {
                 builtBy remapJar
@@ -137,10 +139,10 @@ if (ENV.CURSEFORGE_KEY) {
         apiKey = ENV.CURSEFORGE_KEY
         project {
             id = project.curseforge_id_forge
-            releaseType = relType
+            releaseType = ftbPublishing.relType
             addGameVersion "Forge"
             addGameVersion rootProject.minecraft_version
-            mainArtifact(remapJar.archivePath)
+            mainArtifact(remapJar.archiveFile)
             relations {
                 requiredDependency 'ftb-library-forge'
                 requiredDependency 'ftb-teams-forge'

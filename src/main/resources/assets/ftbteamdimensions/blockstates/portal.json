@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "ftbteamdimensions:block/portal_ns"
+    },
+    "axis=z": {
+      "model": "ftbteamdimensions:block/portal_ew"
+    }
+  }
+}

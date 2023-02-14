@@ -10,7 +10,7 @@ license = "All rights reserved" # Want to make your mod open source? Check out h
 # A list of mods - how many allowed here is determined by the individual mod loader
 
 [[mods]]
-modId = "ftbdimensions"
+modId = "ftbteamdimensions"
 # The version number of the mod - unlike in the Forge MDK,
 # we'll use the processResources task to replace this for us
 version = "${version}"
@@ -34,7 +34,7 @@ Give players their own starting dimensions, based on their FTB Teams team
 # An (optional) dependency for your mod. Though technically not required,
 # it's always helpful to add these to stop your mod from loading when something is missing
 # rather than erroring out later
-[[dependencies.ftbdimensions]]
+[[dependencies.ftbteamdimensions]]
 modId = "forge"
 mandatory = true # do you **need** this mod to be able to launch?
 # A version range using interval notation.
@@ -43,7 +43,7 @@ versionRange = "[40,)" # This essentially means any forge >= 40
 ordering = "NONE" # Use this if you want your mod to be loaded specifically BEFORE or AFTER another mod
 side = "BOTH" # Specify where this mod is required: can be BOTH, CLIENT or SERVER
 
-[[dependencies.ftbdimensions]]
+[[dependencies.ftbteamdimensions]]
   modId = "ftbteams"
   mandatory = true
   versionRange = "[1902.2.12-build.95,)"
@@ -51,7 +51,7 @@ side = "BOTH" # Specify where this mod is required: can be BOTH, CLIENT or SERVE
   side = "BOTH"
 
 # And another dependency, use this if you want to require a certain Minecraft version.
-[[dependencies.ftbdimensions]]
+[[dependencies.ftbteamdimensions]]
 modId = "minecraft"
 mandatory = true
 # See above for how to read this notation, this essentially means any
