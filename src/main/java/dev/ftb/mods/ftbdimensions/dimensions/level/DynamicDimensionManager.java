@@ -6,6 +6,8 @@ import com.mojang.math.Vector3d;
 import com.mojang.serialization.Lifecycle;
 import dev.ftb.mods.ftbdimensions.FTBDimensions;
 import dev.ftb.mods.ftbdimensions.dimensions.net.UpdateDimensionsList;
+import dev.ftb.mods.ftbdimensions.dimensions.prebuilt.PrebuiltStructure;
+import dev.ftb.mods.ftbdimensions.dimensions.prebuilt.PrebuiltStructureManager;
 import net.minecraft.core.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -37,6 +39,7 @@ import java.util.Map;
  */
 public class DynamicDimensionManager {
 	public static final ResourceLocation DEFAULT_STRUCTURE_SET = FTBDimensions.rl( "default");
+	public static final ResourceLocation DEFAULT_DIMENSION_TYPE = FTBDimensions.rl("default");
 
 	public static ServerLevel create(MinecraftServer server, ResourceKey<Level> key, ResourceLocation prebuiltStructureId) {
 		@SuppressWarnings("deprecation")
@@ -52,9 +55,13 @@ public class DynamicDimensionManager {
 
 		ServerLevel overworld = server.getLevel(Level.OVERWORLD);
 
+		ResourceLocation dimensionTypeId = PrebuiltStructureManager.getServerInstance().getStructure(prebuiltStructureId)
+				.map(PrebuiltStructure::dimensionType)
+				.orElse(DEFAULT_DIMENSION_TYPE);
+
 		ResourceKey<LevelStem> dimensionKey = ResourceKey.create(Registry.LEVEL_STEM_REGISTRY, key.location());
 		Holder<DimensionType> typeHolder = registryAccess.registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY).getHolderOrThrow(
-				ResourceKey.create(Registry.DIMENSION_TYPE_REGISTRY, new ResourceLocation(FTBDimensions.MOD_ID, "default"))
+				ResourceKey.create(Registry.DIMENSION_TYPE_REGISTRY, dimensionTypeId)
 		);
 
 		// TODO allow specification of other generation types
@@ -101,9 +108,8 @@ public class DynamicDimensionManager {
 			return null;
 		}
 
+		ServerLevel destinationLevel = server.getLevel(Level.OVERWORLD);
 		for (ServerPlayer player : Lists.newArrayList(removedLevel.players())) {
-			ResourceKey<Level> respawnKey = Level.OVERWORLD;
-			ServerLevel destinationLevel = server.getLevel(respawnKey);
 			BlockPos destinationPos = player.getRespawnPosition();
 
 			if (destinationPos == null) {

@@ -3,7 +3,6 @@ package dev.ftb.mods.ftbdimensions.dimensions.level;
 import dev.ftb.mods.ftbdimensions.dimensions.DimensionsMain;
 import dev.ftb.mods.ftbdimensions.dimensions.prebuilt.PrebuiltStructure;
 import dev.ftb.mods.ftbdimensions.dimensions.prebuilt.PrebuiltStructureManager;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -23,22 +22,21 @@ import net.minecraft.world.level.levelgen.structure.StructureSet;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * Simple-minded void chunk generator (single biome only)
  */
 public class VoidChunkGenerator extends FlatLevelSource implements PrebuiltStructureProvider {
-    private final ResourceLocation prebuiltStructure;
+    private final ResourceLocation prebuiltStructureId;
 
-    private VoidChunkGenerator(Registry<StructureSet> structureSets, FlatLevelGeneratorSettings settings, ResourceLocation prebuiltStructure) {
+    private VoidChunkGenerator(Registry<StructureSet> structureSets, FlatLevelGeneratorSettings settings, ResourceLocation prebuiltStructureId) {
         super(structureSets, settings);
-        this.prebuiltStructure = prebuiltStructure;
+        this.prebuiltStructureId = prebuiltStructureId;
     }
 
     @Override
-    public ResourceLocation getPrebuiltStructure() {
-        return prebuiltStructure;
+    public ResourceLocation getPrebuiltStructureId() {
+        return prebuiltStructureId;
     }
 
     static ChunkGenerator simpleVoidChunkGen(RegistryAccess registryAccess, ResourceLocation prebuiltStructureId) {

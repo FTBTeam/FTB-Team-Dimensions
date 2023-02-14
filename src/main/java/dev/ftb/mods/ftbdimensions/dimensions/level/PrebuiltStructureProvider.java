@@ -12,5 +12,5 @@ public interface PrebuiltStructureProvider {
      * {@code data/<namespace>/ftbdim_prebuilt_structures/<path>}
      * @return a resource location for the prebuilt structure
      */
-    ResourceLocation getPrebuiltStructure();
+    ResourceLocation getPrebuiltStructureId();
 }

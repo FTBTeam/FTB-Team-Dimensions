@@ -42,7 +42,7 @@ public class PrebuiltStartStructure extends Structure {
 		}
 
 		PrebuiltStructureManager mgr = PrebuiltStructureManager.getServerInstance();
-		var res = mgr.getStructure(provider.getPrebuiltStructure()).map(start -> {
+		var res = mgr.getStructure(provider.getPrebuiltStructureId()).map(start -> {
 			StructureTemplate template = context.structureTemplateManager().getOrCreate(start.structureLocation());
 
 			BlockPos spawnPos = DimensionUtils.locateSpawn(template);
@@ -57,7 +57,7 @@ public class PrebuiltStartStructure extends Structure {
 		}).orElse(Optional.empty());
 
 		if (res.isEmpty()) {
-			FTBDimensions.LOGGER.warn("Unable to find [{}] in the prebuilt structure list", provider.getPrebuiltStructure());
+			FTBDimensions.LOGGER.warn("Unable to find [{}] in the prebuilt structure list", provider.getPrebuiltStructureId());
 		}
 
 		return res;
