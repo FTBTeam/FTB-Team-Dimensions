@@ -2,8 +2,7 @@ name: Build & Release
 
 on:
   push:
-    tags:
-      - 'main'
+    branches: [ 'main', '*-dev' ]
 
 jobs:
   build:
