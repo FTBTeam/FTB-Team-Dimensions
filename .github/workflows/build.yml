@@ -1,0 +1,16 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'main'
+
+jobs:
+  build:
+    if: |
+      !contains(github.event.head_commit.message, '[ciskip]')
+    uses: FTBTeam/mods-meta/blob/main/.github/workflows/standard-release.yml@v1
+    with:
+      curse-publish-task: ""
+    secrets:
+      ftb-maven-token: ${{ secrets.FTB_MAVEN_TOKEN }}
