@@ -12,7 +12,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -43,7 +42,11 @@ public class FTBTeamDimensions {
         ModWorldGen.STRUCTURE_PIECE_TYPES.register(MOD_BUS);
 
         MinecraftForge.EVENT_BUS.addListener(this::commandsSetup);
-        MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.addListener(this::reloadListener);
+    }
+
+    public static ResourceLocation rl(String path) {
+        return new ResourceLocation(MOD_ID, path);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -58,12 +61,7 @@ public class FTBTeamDimensions {
         FTBDimensionsCommands.register(event.getDispatcher());
     }
 
-    @SubscribeEvent
-    public void reloadListener(AddReloadListenerEvent event) {
+    private void reloadListener(AddReloadListenerEvent event) {
         event.addListener(new PrebuiltStructureManager.ReloadListener());
-    }
-
-    public static ResourceLocation rl(String path) {
-        return new ResourceLocation(MOD_ID, path);
     }
 }

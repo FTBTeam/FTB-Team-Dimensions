@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsClient;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.arguments.DimensionCommandArgument;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.ArchivedDimension;
@@ -25,13 +24,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.LevelResource;
 
 import java.util.List;
 
 public class FTBDimensionsCommands {
-    private static final LevelResource EXPORT_PATH = new LevelResource("stoneblock-export.png");
-
     public static final DynamicCommandExceptionType NOT_PARTY_TEAM = new DynamicCommandExceptionType((object) -> Component.literal("[%s] is not a party team...".formatted(object)));
     public static final DynamicCommandExceptionType DIM_MISSING = new DynamicCommandExceptionType((object) -> Component.literal("[%s] can not be found".formatted(object)));
     public static final DynamicCommandExceptionType NO_DIM = new DynamicCommandExceptionType((object) -> Component.literal("No dimension found for %s".formatted(object)));
@@ -179,17 +175,5 @@ public class FTBDimensionsCommands {
 
         source.sendFailure(Component.literal("Go to the lobby and jump through the portal!"));
         return 0;
-    }
-
-    private static int exportBiomes(CommandSourceStack source, int radius) {
-        if (radius <= 0) {
-            source.sendFailure(Component.literal("Empty image!"));
-            return 0;
-        }
-
-        source.sendSuccess(Component.literal("Exporting " + (radius * 2 + 1) + "x" + (radius * 2 + 1) + " image..."), false);
-        DimensionsClient.exportBiomes(source.getLevel(), source.getServer().getWorldPath(EXPORT_PATH), radius);
-        source.sendSuccess(Component.literal("Done!"), false);
-        return 1;
     }
 }

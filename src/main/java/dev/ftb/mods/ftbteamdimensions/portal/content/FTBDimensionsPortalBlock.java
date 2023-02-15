@@ -18,6 +18,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.NetherPortalBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -46,14 +47,17 @@ public class FTBDimensionsPortalBlock extends NetherPortalBlock {
         FTBDimServerPlayer sbPlayer = (FTBDimServerPlayer) player;
         sbPlayer.handleStoneBlockPortal(() -> {
             // Push the player out of the portal
-//            BlockPos relative = pos.relative(state.getValue(BlockStateProperties.HORIZONTAL_AXIS) == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X, (player.getDirection() == Direction.SOUTH || player.getDirection() == Direction.WEST ? -2 : 2));
-//            player.teleportTo(relative.getX(), player.getY(), relative.getZ());
+            BlockPos relative = pos.relative(state.getValue(BlockStateProperties.HORIZONTAL_AXIS) == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X, (player.getDirection() == Direction.SOUTH || player.getDirection() == Direction.WEST ? -2 : 2));
+            player.teleportTo(relative.getX(), player.getY(), relative.getZ());
 
             // Instantly jump
             ResourceKey<Level> dimension = DimensionsManager.INSTANCE.getDimension(player);
             if (dimension != null) {
-                DynamicDimensionManager.teleport(player, dimension);
+                // player's team already has a dimension - just go!
+                // note: needs to be deferred a tick, or things can go wrong (e.g. falling out of world on the other side)
+                player.getServer().executeIfPossible(() -> DynamicDimensionManager.teleport(player, dimension));
             } else {
+                // no team yet: bring up the island selection GUI
                 new ShowSelectionGui().sendTo(player);
             }
         });
