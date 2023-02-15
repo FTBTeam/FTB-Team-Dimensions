@@ -30,12 +30,32 @@ The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structur
 }
 ```
 
-* "id" field is mandatory, unique, and should correspond to the JSON filename.
-* "structure" field is mandatory and determines the NBT structure file which will be generated (see `data/ftbteamdimensions/structures/spawn/island1.json`).
-* "name" field is mandatory and is the name displayed in the player's GUI when selecting a structure (this can be a translation key).
-* "author" field is optional and defaults to "FTB Team". It is displayed as "by ..." in the player's GUI when selecting a structure.
-* "structure_set" field is optional and is the structure set tag to use; it defaults to `ftbteamdimensions:default`, which includes only the structure set `ftbteamdimensions:start`.
-  * This controls which structure set(s) will be used during generation of the dimension. 
-* "height" is optional, and controls the absolute Y-level at which spawn islands are generated. It defaults to 64. **TODO support for surface-relative Y values**.
-* "dimension_type" is optional, and determines the dimension type used for created dimensions. It defaults to `ftbteamdimensions:default`, an overworld-like dimension type.
+* "id" field is mandatory, unique, and should correspond to the JSON filename
+* "structure" field is mandatory and determines the NBT structure file which will be used
+  * See `data/ftbteamdimensions/structures/spawn/island1.json` for the default island, which is a tiny island of grass and dirt
+* "name" field is mandatory and is the name displayed in the player's GUI when selecting a structure
+  * This can be a literal string or translation key
+* "author" field is optional and defaults to "FTB Team" - displayed as "by <author>" in the player's GUI when selecting a structure
+  * this is a literal string
+* "structure_set" field is optional and is the structure set tag to use
+  * Defaults to `ftbteamdimensions:default`, which includes only the structure set `ftbteamdimensions:start`
+  * This controls which structure set(s) will be used for the island during generation of the dimension
+  * It's unlikely you'll need to change this.
+* "height" is optional, and controls the absolute Y-level at which spawn islands are generated.
+  * Defaults to 64. **TODO support for surface-relative Y values**.
+* "dimension_type" is optional, and determines the dimension type used for created dimensions
+  * Defaults to `ftbteamdimensions:default`, an overworld-like dimension type
 
+## Structure NBT
+
+Structure files (both for the overworld lobby and dimension island structures) are standard vanilla NBT structures, as saved
+via [Structure Blocks](https://minecraft.fandom.com/wiki/Structure_Block).
+There is one important requirement: all structures **must** contain one Structure Block in data mode with the custom data tag `spawn_point`. This is used to
+determine where players will spawn in both the overworld and dimensions that are created.
+
+Structures created will always be positioned with the spawn point at (X,Z) = (0,0). The data structure block is replaced with air when the
+structure is actually placed into the world. 
+
+The default lobby structure is at `data/ftbteamdimensions/structures/lobby.nbt`, but this can be changed in one of two ways:
+* in mod config (see `lobbyStructure` in `ftbteamdimensions-common.toml`)
+* or simply overwrite it via datapack!
