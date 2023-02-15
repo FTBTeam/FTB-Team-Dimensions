@@ -21,5 +21,6 @@ public interface ModBlocks {
 
     RegistryObject<Block> SB_PORTAL_BLOCK = BLOCK_REGISTRY.register("portal", FTBDimensionsPortalBlock::new);
 
+    // TODO remove this before release.  only here to make it easy to manually build a portal structure
     RegistryObject<Item> SB_PORTAL_ITEM = ITEM_REGISTRY.register("portal", () -> new BlockItem(SB_PORTAL_BLOCK.get(), new Item.Properties()));
 }
