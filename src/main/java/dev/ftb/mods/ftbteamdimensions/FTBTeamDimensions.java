@@ -11,6 +11,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -43,6 +44,7 @@ public class FTBTeamDimensions {
 
         MinecraftForge.EVENT_BUS.addListener(this::commandsSetup);
         MinecraftForge.EVENT_BUS.addListener(this::reloadListener);
+        MinecraftForge.EVENT_BUS.addListener(this::dimensionChanged);
     }
 
     public static ResourceLocation rl(String path) {
@@ -63,5 +65,9 @@ public class FTBTeamDimensions {
 
     private void reloadListener(AddReloadListenerEvent event) {
         event.addListener(new PrebuiltStructureManager.ReloadListener());
+    }
+
+    private void dimensionChanged(PlayerEvent.PlayerChangedDimensionEvent event) {
+
     }
 }

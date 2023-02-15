@@ -3,7 +3,6 @@ package dev.ftb.mods.ftbteamdimensions.portal.content;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.net.ShowSelectionGui;
-import dev.ftb.mods.ftbteamdimensions.portal.FTBDimServerPlayer;
 import dev.ftb.mods.ftbteamdimensions.portal.ForgeOnlyOverride;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -18,12 +17,11 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.NetherPortalBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
- * A lot of this class extends from the nether portal block
+ * A bit like the Nether Portal block, but not really.
  */
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -44,13 +42,11 @@ public class FTBDimensionsPortalBlock extends NetherPortalBlock {
             return;
         }
 
-        FTBDimServerPlayer sbPlayer = (FTBDimServerPlayer) player;
-        sbPlayer.handleStoneBlockPortal(() -> {
-            // Push the player out of the portal
-            BlockPos relative = pos.relative(state.getValue(BlockStateProperties.HORIZONTAL_AXIS) == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X, (player.getDirection() == Direction.SOUTH || player.getDirection() == Direction.WEST ? -2 : 2));
-            player.teleportTo(relative.getX(), player.getY(), relative.getZ());
-
-            // Instantly jump
+        if (player.isOnPortalCooldown()) {
+            // vanilla functionality here: ensure portal creation/port logic only happens when stepping into the portal
+            // and not when loitering around in a portal block
+            player.setPortalCooldown();
+        } else {
             ResourceKey<Level> dimension = DimensionsManager.INSTANCE.getDimension(player);
             if (dimension != null) {
                 // player's team already has a dimension - just go!
@@ -58,9 +54,10 @@ public class FTBDimensionsPortalBlock extends NetherPortalBlock {
                 player.getServer().executeIfPossible(() -> DynamicDimensionManager.teleport(player, dimension));
             } else {
                 // no team yet: bring up the island selection GUI
+                player.setPortalCooldown();
                 new ShowSelectionGui().sendTo(player);
             }
-        });
+        }
     }
 
     @Override
