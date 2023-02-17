@@ -1,4 +1,4 @@
-package dev.ftb.mods.ftbteamdimensions.dimensions.arguments;
+package dev.ftb.mods.ftbteamdimensions.commands.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -17,8 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.concurrent.CompletableFuture;
 
 public class PrebuiltCommandArgument implements ArgumentType<PrebuiltStructure> {
-    private static final DynamicCommandExceptionType START_NOT_FOUND
-            = new DynamicCommandExceptionType(object -> Component.literal("Prebuilt Structure '" + object + "' not found!"));
+    private static final DynamicCommandExceptionType START_NOT_FOUND = new DynamicCommandExceptionType(
+            object -> Component.translatable("ftbteamdimensions.message.missing_prebuilt", object));
 
     public static PrebuiltCommandArgument create() {
         return new PrebuiltCommandArgument();

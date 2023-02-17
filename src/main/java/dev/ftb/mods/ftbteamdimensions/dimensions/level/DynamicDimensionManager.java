@@ -5,9 +5,9 @@ import com.google.common.collect.Lists;
 import com.mojang.math.Vector3d;
 import com.mojang.serialization.Lifecycle;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
-import dev.ftb.mods.ftbteamdimensions.dimensions.net.UpdateDimensionsList;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructure;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
+import dev.ftb.mods.ftbteamdimensions.net.UpdateDimensionsList;
 import net.minecraft.core.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -18,6 +18,7 @@ import net.minecraft.server.level.TicketType;
 import net.minecraft.server.level.progress.ChunkProgressListener;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.border.BorderChangeListener;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -34,15 +35,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Thanks to McJty and Commoble for providing this code.
  * See original DynamicDimensionManager in RF Tools Dimensions for comments and more generic example.
  */
 public class DynamicDimensionManager {
-	public static final ResourceLocation DEFAULT_STRUCTURE_SET = FTBTeamDimensions.rl( "default");
-	public static final ResourceLocation DEFAULT_DIMENSION_TYPE = FTBTeamDimensions.rl("default");
-
 	public static ServerLevel create(MinecraftServer server, ResourceKey<Level> key, ResourceLocation prebuiltStructureId) {
 		@SuppressWarnings("deprecation")
 		Map<ResourceKey<Level>, ServerLevel> map = server.forgeGetWorldMap();
@@ -55,11 +54,11 @@ public class DynamicDimensionManager {
 
 		RegistryAccess registryAccess = server.registryAccess();
 
-		ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+		ServerLevel overworld = Objects.requireNonNull(server.getLevel(Level.OVERWORLD));
 
 		ResourceLocation dimensionTypeId = PrebuiltStructureManager.getServerInstance().getStructure(prebuiltStructureId)
 				.map(PrebuiltStructure::dimensionType)
-				.orElse(DEFAULT_DIMENSION_TYPE);
+				.orElse(PrebuiltStructure.DEFAULT_DIMENSION_TYPE);
 
 		ResourceKey<LevelStem> dimensionKey = ResourceKey.create(Registry.LEVEL_STEM_REGISTRY, key.location());
 		Holder<DimensionType> typeHolder = registryAccess.registryOrThrow(Registry.DIMENSION_TYPE_REGISTRY).getHolderOrThrow(
@@ -86,7 +85,7 @@ public class DynamicDimensionManager {
 				dimension,
 				chunkProgressListener,
 				worldGenSettings.isDebug(),
-				net.minecraft.world.level.biome.BiomeManager.obfuscateSeed(worldGenSettings.seed()),
+				BiomeManager.obfuscateSeed(worldGenSettings.seed()),
 				ImmutableList.of(),
 				false
 		);
@@ -101,69 +100,64 @@ public class DynamicDimensionManager {
 
 	public static ServerLevel destroy(MinecraftServer server, ResourceKey<Level> key) {
 		WorldGenSettings worldGenSettings = server.getWorldData().worldGenSettings();
-		ServerLevel overworld = server.getLevel(Level.OVERWORLD);
+		ServerLevel overworld = Objects.requireNonNull(server.getLevel(Level.OVERWORLD));
 		Path dimensionPath = server.storageSource.getDimensionPath(key);
 
+		// I know, we shouldn't mess with this, but...
 		ServerLevel removedLevel = server.forgeGetWorldMap().remove(key);
-
 		if (removedLevel == null) {
 			return null;
 		}
 
-		ServerLevel destinationLevel = server.getLevel(Level.OVERWORLD);
+		// move all players in the dimension back to overworld
 		for (ServerPlayer player : Lists.newArrayList(removedLevel.players())) {
 			BlockPos destinationPos = player.getRespawnPosition();
-
 			if (destinationPos == null) {
-				destinationPos = destinationLevel.getSharedSpawnPos();
+				destinationPos = overworld.getSharedSpawnPos();
 			}
 
 			float respawnAngle = player.getRespawnAngle();
-			player.teleportTo(destinationLevel, destinationPos.getX(), destinationPos.getY(), destinationPos.getZ(), respawnAngle, 0F);
+			player.teleportTo(overworld, destinationPos.getX(), destinationPos.getY(), destinationPos.getZ(), respawnAngle, 0F);
 		}
 
 		removedLevel.save(null, false, removedLevel.noSave());
 		MinecraftForge.EVENT_BUS.post(new LevelEvent(removedLevel));
 
+		// reset world border listeners if needed
 		WorldBorder overworldBorder = overworld.getWorldBorder();
 		WorldBorder removedWorldBorder = removedLevel.getWorldBorder();
-		BorderChangeListener targetListener = null;
+		overworldBorder.listeners.stream()
+				.filter(listener -> listener instanceof BorderChangeListener.DelegateBorderChangeListener l && removedWorldBorder == l.worldBorder)
+				.findFirst()
+				.ifPresent(overworldBorder::removeListener);
 
-		for (BorderChangeListener listener : overworldBorder.listeners) {
-			if (listener instanceof BorderChangeListener.DelegateBorderChangeListener && removedWorldBorder == ((BorderChangeListener.DelegateBorderChangeListener) listener).worldBorder) {
-				targetListener = listener;
-				break;
-			}
-		}
-
-		if (targetListener != null) {
-			overworldBorder.removeListener(targetListener);
-		}
-
+		// remove the dimension from the dimensions (level-stem) registry
+		// needs to be done by copying the registry to a new one without the deleted dimension
 		Registry<LevelStem> oldRegistry = worldGenSettings.dimensions();
 		MappedRegistry<LevelStem> newRegistry = new MappedRegistry<>(Registry.LEVEL_STEM_REGISTRY, oldRegistry.elementsLifecycle(), null);
-
 		for (var entry : oldRegistry.entrySet()) {
 			ResourceKey<LevelStem> oldKey = entry.getKey();
 			ResourceKey<Level> oldLevelKey = ResourceKey.create(Registry.DIMENSION_REGISTRY, oldKey.location());
 			LevelStem dimension = entry.getValue();
-
-			if (oldKey != null && dimension != null && oldLevelKey != key) {
+			if (dimension != null && oldLevelKey != key) {
 				newRegistry.register(oldKey, dimension, oldRegistry.lifecycle(dimension));
 			}
 		}
+		worldGenSettings.dimensions = newRegistry;
 
+		// try to delete the world from disk
 		if (Files.exists(dimensionPath)) {
 			try {
 				FileUtils.deleteDirectory(dimensionPath.toFile());
+				FTBTeamDimensions.LOGGER.info("Deleted archived dimension {} from disk", dimensionPath);
 			} catch (IOException e) {
 				FTBTeamDimensions.LOGGER.error("Failed to delete dimension file for {} at {}", key, dimensionPath, e);
 			}
 		}
 
-		worldGenSettings.dimensions = newRegistry;
 		server.markWorldsDirty();
 		new UpdateDimensionsList(key, false).sendToAll(server);
+
 		return removedLevel;
 	}
 
@@ -180,7 +174,7 @@ public class DynamicDimensionManager {
 				if (player.getRespawnDimension().equals(key) && respawnPosition != null) {
 					vec.add(new Vector3d(respawnPosition.getX(), respawnPosition.getY(), respawnPosition.getZ()));
 				} else {
-					BlockPos levelSharedSpawn = DimensionStorage.get(player.server).getDimensionSpawnLocations(level.dimension().location());
+					BlockPos levelSharedSpawn = DimensionStorage.get(player.server).getDimensionSpawnLocation(level.dimension().location());
 					if (levelSharedSpawn == null) {
 						levelSharedSpawn = BlockPos.ZERO;
 					}
@@ -196,7 +190,7 @@ public class DynamicDimensionManager {
 			}
 			return true;
 		} else {
-			FTBTeamDimensions.LOGGER.error("Failed to teleport " + player.getScoreboardName() + " to " + key.location());
+			FTBTeamDimensions.LOGGER.error("Failed to teleport {} to {} (bad level key)", player.getScoreboardName(), key.location());
 			return false;
 		}
 	}

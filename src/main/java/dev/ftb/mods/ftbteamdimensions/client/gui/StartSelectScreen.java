@@ -1,4 +1,4 @@
-package dev.ftb.mods.ftbteamdimensions.dimensions.screen;
+package dev.ftb.mods.ftbteamdimensions.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -46,7 +46,7 @@ public class StartSelectScreen extends Screen {
 				return;
 			}
 
-			this.onSelect.accept(this.startList.getSelected().islandDir);
+			this.onSelect.accept(this.startList.getSelected().structure);
 			if (this.getMinecraft().level != null) {
 				this.onClose();
 			}
@@ -57,7 +57,7 @@ public class StartSelectScreen extends Screen {
 		this.addWidget(this.searchBox);
 		this.addWidget(this.startList);
 
-		this.fallbackIcon = minecraft.getTextureManager().getTexture(PrebuiltStructure.DEFAULT_IMAGE);
+		this.fallbackIcon = minecraft.getTextureManager().getTexture(PrebuiltStructure.FALLBACK_IMAGE);
 	}
 
 	@Override
@@ -71,8 +71,8 @@ public class StartSelectScreen extends Screen {
 		this.font.drawShadow(matrices, value, this.width / 2f - this.font.width(value) / 2f, 20, 0xFFFFFF);
 	}
 
-	public class StartList extends AbstractSelectionList<StartList.Entry> {
-		public StartList(Minecraft minecraft, int width, int height, int top, int bottom) {
+	private class StartList extends AbstractSelectionList<StartList.Entry> {
+		StartList(Minecraft minecraft, int width, int height, int top, int bottom) {
 			super(minecraft, width, height, top, bottom, 50); // 30 = item height
 			this.children().addAll(PrebuiltStructureManager.getClientInstance().getStructures().stream().map(Entry::new).toList());
 		}
@@ -93,7 +93,7 @@ public class StartSelectScreen extends Screen {
 			super.setSelected(entry);
 		}
 
-		public void searchList(String value) {
+		private void searchList(String value) {
 			this.children().clear();
 
 			String lowerValue = value.toLowerCase();
@@ -102,7 +102,7 @@ public class StartSelectScreen extends Screen {
 				this.children().addAll(manager.getStructures().stream().map(Entry::new).toList());
 			} else {
 				this.children().addAll(manager.getStructures().stream()
-						.filter(structure -> structure.name().getString().toLowerCase().contains(lowerValue))
+						.filter(structure -> structure.name().toLowerCase().contains(lowerValue))
 						.map(Entry::new).toList()
 				);
 			}
@@ -110,15 +110,14 @@ public class StartSelectScreen extends Screen {
 
 		@Override
 		public void updateNarration(NarrationElementOutput arg) {
-
 		}
 
-		public class Entry extends AbstractSelectionList.Entry<Entry> {
-			private final PrebuiltStructure islandDir;
+		private class Entry extends AbstractSelectionList.Entry<Entry> {
+			private final PrebuiltStructure structure;
 			private long lastClickTime;
 
-			public Entry(PrebuiltStructure island) {
-				this.islandDir = island;
+			private Entry(PrebuiltStructure structure) {
+				this.structure = structure;
 			}
 
 			@Override
@@ -127,7 +126,7 @@ public class StartSelectScreen extends Screen {
 
 				if (Util.getMillis() - this.lastClickTime < 250L) {
 					StartSelectScreen.this.onClose();
-					StartSelectScreen.this.onSelect.accept(this.islandDir);
+					StartSelectScreen.this.onSelect.accept(this.structure);
 					return true;
 				} else {
 					this.lastClickTime = Util.getMillis();
@@ -140,11 +139,11 @@ public class StartSelectScreen extends Screen {
 				Font font = Minecraft.getInstance().font;
 
 				int startX = left + 80;
-				font.drawShadow(matrices, this.islandDir.name(), startX, top + 10, 0xFFFFFF);
-				font.drawShadow(matrices, Component.translatable("screens.ftbteamdimensions.by", this.islandDir.author()), startX, top + 26, 0xD3D3D3);
+				font.drawShadow(matrices, Component.translatable(this.structure.name()), startX, top + 10, 0xFFFFFF);
+				font.drawShadow(matrices, Component.translatable("screens.ftbteamdimensions.by", this.structure.author()), startX, top + 26, 0xD3D3D3);
 
 				// Register the texture
-				AbstractTexture texture = minecraft.getTextureManager().getTexture(this.islandDir.getImage());//, StartSelectScreen.this.fallbackIcon);
+				AbstractTexture texture = minecraft.getTextureManager().getTexture(this.structure.previewImage());
 				RenderSystem.setShaderTexture(0, texture.getId());
 				blit(matrices, left + 7, top + 7, 0f, 0f, 56, 32, 56, 32);
 			}

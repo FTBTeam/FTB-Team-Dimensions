@@ -42,7 +42,7 @@ public class VoidChunkGenerator extends FlatLevelSource implements PrebuiltStruc
     static ChunkGenerator simpleVoidChunkGen(RegistryAccess registryAccess, ResourceLocation prebuiltStructureId) {
         Registry<StructureSet> structureSetRegistry = registryAccess.registryOrThrow(Registry.STRUCTURE_SET_REGISTRY);
         ResourceLocation structureSetId = PrebuiltStructureManager.getServerInstance().getStructure(prebuiltStructureId)
-                .map(PrebuiltStructure::structureSetId).orElse(DynamicDimensionManager.DEFAULT_STRUCTURE_SET);
+                .map(PrebuiltStructure::structureSetId).orElse(PrebuiltStructure.DEFAULT_STRUCTURE_SET);
         HolderSet<StructureSet> structures = structureSetRegistry.getOrCreateTag(TagKey.create(Registry.STRUCTURE_SET_REGISTRY, structureSetId));
 
         Registry<Biome> biomeRegistry = registryAccess.registryOrThrow(Registry.BIOME_REGISTRY);

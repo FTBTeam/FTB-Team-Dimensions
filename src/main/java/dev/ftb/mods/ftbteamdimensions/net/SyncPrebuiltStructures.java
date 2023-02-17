@@ -1,4 +1,4 @@
-package dev.ftb.mods.ftbteamdimensions.dimensions.net;
+package dev.ftb.mods.ftbteamdimensions.net;
 
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.networking.simple.BaseS2CMessage;

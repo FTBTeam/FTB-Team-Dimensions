@@ -1,9 +1,11 @@
 package dev.ftb.mods.ftbteamdimensions.dimensions;
 
 import com.google.common.collect.ImmutableList;
+import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.properties.StructureMode;
@@ -39,5 +41,10 @@ public class DimensionUtils {
         settings.setRotationPivot(new BlockPos(size.getX() / 2, size.getY() / 2, size.getZ() / 2));
         settings.setRotation(Rotation.NONE);
         return settings;
+    }
+
+    public static boolean isPortalDimension(Level level) {
+        return FTBDimensionsConfig.DIMENSIONS.allowNetherPortals.get()
+                && level.dimension().location().getNamespace().equals(FTBTeamDimensions.MOD_ID);
     }
 }

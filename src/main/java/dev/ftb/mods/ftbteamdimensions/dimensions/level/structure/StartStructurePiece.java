@@ -16,15 +16,15 @@ import net.minecraft.world.level.levelgen.structure.TemplateStructurePiece;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
-public class PrebuiltStartStructurePiece extends TemplateStructurePiece {
+public class StartStructurePiece extends TemplateStructurePiece {
 	public final ResourceLocation startId;
 
-	public PrebuiltStartStructurePiece(StructureTemplateManager structureManager, ResourceLocation id, BlockPos pos, StructureTemplate template) {
+	public StartStructurePiece(StructureTemplateManager structureManager, ResourceLocation id, BlockPos pos, StructureTemplate template) {
 		super(ModWorldGen.START_STRUCTURE_PIECE.get(), 0, structureManager, id, id.toString(), DimensionUtils.makePlacementSettings(template), pos);
 		startId = id;
 	}
 
-	public PrebuiltStartStructurePiece(StructureTemplateManager structureManager, CompoundTag tag) {
+	public StartStructurePiece(StructureTemplateManager structureManager, CompoundTag tag) {
 		super(ModWorldGen.START_STRUCTURE_PIECE.get(), tag, structureManager, id -> DimensionUtils.makePlacementSettings(structureManager.getOrCreate(id)));
 		startId = new ResourceLocation(tag.getString("Template"));
 	}

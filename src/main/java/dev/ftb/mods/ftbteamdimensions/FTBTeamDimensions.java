@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbteamdimensions;
 
-import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsClient;
+import dev.ftb.mods.ftbteamdimensions.client.DimensionsClient;
+import dev.ftb.mods.ftbteamdimensions.commands.FTBDimensionsCommands;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsMain;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
@@ -8,20 +9,14 @@ import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManag
 import dev.ftb.mods.ftbteamdimensions.registry.ModArgumentTypes;
 import dev.ftb.mods.ftbteamdimensions.registry.ModBlocks;
 import dev.ftb.mods.ftbteamdimensions.registry.ModWorldGen;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.portal.PortalShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -55,7 +50,6 @@ public class FTBTeamDimensions {
         MinecraftForge.EVENT_BUS.addListener(this::commandsSetup);
         MinecraftForge.EVENT_BUS.addListener(this::reloadListener);
         MinecraftForge.EVENT_BUS.addListener(this::dimensionChanged);
-        MinecraftForge.EVENT_BUS.addListener(this::netherPortalHack);
     }
 
     public static ResourceLocation rl(String path) {
@@ -87,22 +81,6 @@ public class FTBTeamDimensions {
                     event.setCanceled(true);
                     player.server.executeIfPossible(() -> DynamicDimensionManager.teleport(player, dim));
                 }
-            }
-        }
-    }
-
-    private void netherPortalHack(PlayerInteractEvent.RightClickBlock event) {
-        // temporary hack to force nether portal creation in team dims
-        Level level = event.getLevel();
-        BlockPos pos = event.getPos();
-        if (event.getEntity() instanceof ServerPlayer player
-                && event.getFace() != null
-                && event.getItemStack().getItem() == Items.BLAZE_ROD
-                && level.getBlockState(pos).is(Blocks.OBSIDIAN)) {
-            var dim = DimensionsManager.INSTANCE.getDimension(player);
-            if (event.getLevel().dimension().equals(dim)) {
-                PortalShape.findEmptyPortalShape(level, pos.relative(event.getFace()), Direction.Axis.X)
-                        .ifPresent(PortalShape::createPortalBlocks);
             }
         }
     }

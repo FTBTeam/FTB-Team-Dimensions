@@ -1,11 +1,13 @@
-package dev.ftb.mods.ftbteamdimensions;
+package dev.ftb.mods.ftbteamdimensions.commands;
 
+import com.google.common.collect.ImmutableSet;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
-import dev.ftb.mods.ftbteamdimensions.dimensions.arguments.DimensionCommandArgument;
+import dev.ftb.mods.ftbteamdimensions.commands.arguments.DimensionCommandArgument;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.ArchivedDimension;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
@@ -21,16 +23,23 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class FTBDimensionsCommands {
-    public static final DynamicCommandExceptionType NOT_PARTY_TEAM = new DynamicCommandExceptionType((object) -> Component.literal("[%s] is not a party team...".formatted(object)));
-    public static final DynamicCommandExceptionType DIM_MISSING = new DynamicCommandExceptionType((object) -> Component.literal("[%s] can not be found".formatted(object)));
-    public static final DynamicCommandExceptionType NO_DIM = new DynamicCommandExceptionType((object) -> Component.literal("No dimension found for %s".formatted(object)));
+    private static final DynamicCommandExceptionType NOT_PARTY_TEAM = new DynamicCommandExceptionType(
+            object -> Component.translatable("ftbteamdimensions.message.not_a_party", object));
+    private static final DynamicCommandExceptionType DIM_MISSING = new DynamicCommandExceptionType(
+            object -> Component.translatable("ftbteamdimensions.message.missing_dimension", object));
+    private static final DynamicCommandExceptionType NO_DIM = new DynamicCommandExceptionType(
+            object -> Component.translatable("ftbteamdimensions.message.no_dim_for_team", object));
 
     public static void register(CommandDispatcher<CommandSourceStack> commandDispatcher) {
         FTBTeamDimensions.LOGGER.info("Registering FTB Dimensions Commands");
@@ -39,6 +48,10 @@ public class FTBDimensionsCommands {
                 .then(Commands.literal("visit")
                         .requires(source -> source.hasPermission(2))
                         .then(Commands.argument("team", TeamArgument.create()).executes(context -> visitDim(context.getSource(), TeamArgument.get(context, "team"))))
+                )
+                .then(Commands.literal("list-dimensions")
+                        .requires(source -> source.hasPermission(2))
+                        .executes(context -> listDimensions(context.getSource()))
                 )
                 .then(Commands.literal("list-archived")
                         .requires(source -> source.hasPermission(2))
@@ -66,7 +79,7 @@ public class FTBDimensionsCommands {
                 .then(Commands.literal("home").executes(context -> home(context.getSource())))
         );
 
-        commandDispatcher.register(Commands.literal("ftbstoneblock").redirect(commands));
+        commandDispatcher.register(Commands.literal("ftbdim").redirect(commands));
     }
 
     public static PartyTeam createPartyTeam(ServerPlayer player) throws CommandSyntaxException {
@@ -80,20 +93,22 @@ public class FTBDimensionsCommands {
     private static int restore(CommandSourceStack source, ArchivedDimension dimension, ServerPlayer player) throws CommandSyntaxException {
         PartyTeam party = createPartyTeam(player);
 
-        ResourceKey<Level> levelResourceKey = DimensionStorage.get(source.getServer()).putDimension(party, dimension.dimensionName());
+        DimensionStorage storage = DimensionStorage.get(source.getServer());
+        ResourceKey<Level> levelResourceKey = storage.putDimension(party, dimension.dimensionName());
 
         // Remove the dimension from the archived dims
-        DimensionStorage.get(source.getServer()).getArchivedDimensions().remove(dimension);
-        DimensionStorage.get(source.getServer()).setDirty();
+        storage.getArchivedDimensions().remove(dimension);
+        storage.setDirty();
 
-        DynamicDimensionManager.teleport(player, levelResourceKey);
+        source.getServer().executeIfPossible(() -> DynamicDimensionManager.teleport(player, levelResourceKey));
 
-        source.sendSuccess(Component.literal("Successfully restored dimension").withStyle(ChatFormatting.GREEN), false);
+        source.sendSuccess(Component.translatable("ftbteamdimensions.message.restored", dimension.dimensionName()).withStyle(ChatFormatting.GREEN), false);
         return 0;
     }
 
     private static int prune(CommandSourceStack source, ArchivedDimension dimension) throws CommandSyntaxException {
-        List<ArchivedDimension> archivedDimensions = DimensionStorage.get(source.getServer()).getArchivedDimensions();
+        DimensionStorage storage = DimensionStorage.get(source.getServer());
+        List<ArchivedDimension> archivedDimensions = storage.getArchivedDimensions();
         if (!archivedDimensions.contains(dimension)) {
             throw DIM_MISSING.create(dimension.dimensionName());
         }
@@ -101,42 +116,66 @@ public class FTBDimensionsCommands {
         DynamicDimensionManager.destroy(source.getServer(), ResourceKey.create(Registry.DIMENSION_REGISTRY, dimension.dimensionName()));
 
         archivedDimensions.remove(dimension);
-        DimensionStorage.get(source.getServer()).setDirty();
+        storage.setDirty();
 
-        source.sendSuccess(Component.literal("Successfully pruned %s".formatted(dimension.dimensionName())).withStyle(ChatFormatting.GREEN), false);
+        source.sendSuccess(Component.translatable("ftbteamdimensions.message.pruned_one", dimension.dimensionName()).withStyle(ChatFormatting.GREEN), false);
         return 0;
     }
 
     private static int prune(CommandSourceStack source) {
         MinecraftServer server = source.getServer();
-        List<ArchivedDimension> archivedDimensions = DimensionStorage.get(source.getServer()).getArchivedDimensions();
+        DimensionStorage storage = DimensionStorage.get(source.getServer());
+        List<ArchivedDimension> archivedDimensions = storage.getArchivedDimensions();
         int size = archivedDimensions.size();
 
         for (ArchivedDimension e : archivedDimensions) {
             DynamicDimensionManager.destroy(server, ResourceKey.create(Registry.DIMENSION_REGISTRY, e.dimensionName()));
         }
 
-        DimensionStorage.get(source.getServer()).getArchivedDimensions().clear();
-        DimensionStorage.get(source.getServer()).setDirty();
+        storage.getArchivedDimensions().clear();
+        storage.setDirty();
 
-        source.sendSuccess(Component.literal("Successfully pruned %s dimensions".formatted(size)).withStyle(ChatFormatting.GREEN), false);
+        source.sendSuccess(Component.translatable("ftbteamdimensions.message.pruned_all", size).withStyle(ChatFormatting.GREEN), false);
 
         return 0;
+    }
+
+    private static int listDimensions(CommandSourceStack source) {
+        DimensionStorage storage = DimensionStorage.get(source.getServer());
+        Map<UUID, ResourceLocation> map = storage.getTeamToDimension();
+
+        if (map.isEmpty()) {
+            source.sendFailure(Component.translatable("ftbteamdimensions.message.no_dimensions"));
+            return -1;
+        } else {
+            Set<UUID> dimIds = storage.getTeamToDimension().keySet();
+            source.sendSuccess(Component.translatable("ftbteamdimensions.message.dim_header", dimIds.size()).withStyle(ChatFormatting.GREEN), false);
+            dimIds.forEach(id -> {
+                Team team = FTBTeamsAPI.getManager().getTeamByID(id);
+                if (team != null) {
+                    ResourceKey<Level> key = storage.getDimensionId(team);
+                    if (key != null) {
+                        source.sendSuccess(Component.literal(key.location().toString()).withStyle(ChatFormatting.YELLOW)
+                                .append(Component.literal(": [team=%s]".formatted(team.getStringID())).withStyle(ChatFormatting.WHITE)), false);
+                    }
+                }
+            });
+            return 0;
+        }
     }
 
     private static int listArchived(CommandSourceStack source) {
         List<ArchivedDimension> archivedDimensions = DimensionStorage.get(source.getServer()).getArchivedDimensions();
         if (archivedDimensions.isEmpty()) {
-            source.sendFailure(Component.literal("No archived dimensions available"));
+            source.sendFailure(Component.translatable("ftbteamdimensions.message.no_archived"));
             return -1;
         }
 
-        for (ArchivedDimension archivedDimension : archivedDimensions) {
-            source.sendSuccess(Component.literal("%s: [team=%s] [owner=%s]".formatted(
-                    archivedDimension.dimensionName(),
-                    archivedDimension.teamName(),
-                    archivedDimension.teamOwner()
-            )), false);
+        source.sendSuccess(Component.translatable("ftbteamdimensions.message.dim_header", archivedDimensions.size()).withStyle(ChatFormatting.DARK_GREEN), false);
+        for (ArchivedDimension aDim : archivedDimensions) {
+            source.sendSuccess(Component.literal(aDim.dimensionName().toString()).withStyle(ChatFormatting.GOLD)
+                    .append(Component.literal(": [team=%s] [owner=%s]".formatted(aDim.teamName(), aDim.teamOwner())).withStyle(ChatFormatting.GRAY)),
+                    false);
         }
 
         return 0;
@@ -173,7 +212,7 @@ public class FTBDimensionsCommands {
             return 1;
         }
 
-        source.sendFailure(Component.literal("Go to the lobby and jump through the portal!"));
+        source.sendFailure(Component.translatable("ftbteamdimensions.message.cant_teleport"));
         return 0;
     }
 }

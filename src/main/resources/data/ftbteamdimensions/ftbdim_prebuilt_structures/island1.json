@@ -4,5 +4,6 @@
   "name": "Simple Island",
   "structure_set": "ftbteamdimensions:default",
   "height": 64,
-  "dimension_type": "ftbteamdimensions:default"
+  "dimension_type": "ftbteamdimensions:default",
+  "preview_image": "ftbteamdimensions:textures/spawn/island1.png"
 }

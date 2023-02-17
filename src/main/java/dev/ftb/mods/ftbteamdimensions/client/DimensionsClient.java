@@ -1,10 +1,10 @@
-package dev.ftb.mods.ftbteamdimensions.dimensions;
+package dev.ftb.mods.ftbteamdimensions.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.ArchivedDimension;
-import dev.ftb.mods.ftbteamdimensions.dimensions.net.CreateDimensionForTeam;
-import dev.ftb.mods.ftbteamdimensions.dimensions.screen.StartSelectScreen;
+import dev.ftb.mods.ftbteamdimensions.net.CreateDimensionForTeam;
+import dev.ftb.mods.ftbteamdimensions.client.gui.StartSelectScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.DimensionSpecialEffects;

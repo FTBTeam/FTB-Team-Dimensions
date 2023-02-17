@@ -26,8 +26,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class DimensionStorage extends SavedData {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private static final String SAVE_NAME = new ResourceLocation(FTBTeamDimensions.MOD_ID, "dimension_store").toString().replace(":", "_");
+    private static final String SAVE_NAME = FTBTeamDimensions.MOD_ID + "_dimension_store";
 
     private final HashMap<UUID, ResourceLocation> teamToDimension = new HashMap<>();
     private final HashMap<ResourceLocation, BlockPos> dimensionSpawnLocations = new HashMap<>();
@@ -45,15 +44,13 @@ public class DimensionStorage extends SavedData {
 
         DimensionDataStorage dataStorage = level.getDataStorage();
 
-        return dataStorage
-                .computeIfAbsent(DimensionStorage::load, DimensionStorage::new, SAVE_NAME);
+        return dataStorage.computeIfAbsent(DimensionStorage::load, DimensionStorage::new, SAVE_NAME);
     }
 
     public static DimensionStorage get(MinecraftServer server) {
         DimensionDataStorage dataStorage = server.getLevel(Level.OVERWORLD).getDataStorage();
 
-        return dataStorage
-                .computeIfAbsent(DimensionStorage::load, DimensionStorage::new, SAVE_NAME);
+        return dataStorage.computeIfAbsent(DimensionStorage::load, DimensionStorage::new, SAVE_NAME);
     }
 
     @Nullable
@@ -85,11 +82,8 @@ public class DimensionStorage extends SavedData {
 
         teamToDimension.remove(oldTeam.getId());
 
-        String playerName = "unknown";
         ServerPlayer player = oldTeam.manager.server.getPlayerList().getPlayer(oldTeam.getOwner());
-        if (player != null) {
-            playerName = player.getDisplayName().getString();
-        }
+        String playerName = player != null ? player.getDisplayName().getString() : "unknown";
 
         archivedDimensions.add(new ArchivedDimension(playerName, oldTeam.getOwner(), oldTeam.getDisplayName(), dimensionId.location()));
         this.setDirty();
@@ -108,7 +102,7 @@ public class DimensionStorage extends SavedData {
     }
 
     @Nullable
-    public BlockPos getDimensionSpawnLocations(ResourceLocation dimKeyLocation) {
+    public BlockPos getDimensionSpawnLocation(ResourceLocation dimKeyLocation) {
         return dimensionSpawnLocations.get(dimKeyLocation);
     }
 

@@ -5,8 +5,8 @@ import dev.architectury.event.events.common.PlayerEvent;
 import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
-import dev.ftb.mods.ftbteamdimensions.dimensions.net.SyncArchivedDimensions;
-import dev.ftb.mods.ftbteamdimensions.dimensions.net.SyncPrebuiltStructures;
+import dev.ftb.mods.ftbteamdimensions.net.SyncArchivedDimensions;
+import dev.ftb.mods.ftbteamdimensions.net.SyncPrebuiltStructures;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
 import dev.ftb.mods.ftbteams.data.Team;
 import dev.ftb.mods.ftbteams.data.TeamType;
@@ -69,7 +69,7 @@ public class DimensionsMain {
             return;
         }
 
-        BlockPos blockPos = DimensionStorage.get(event.getPlayer().server).getDimensionSpawnLocations(dimension.location());
+        BlockPos blockPos = DimensionStorage.get(event.getPlayer().server).getDimensionSpawnLocation(dimension.location());
         if (blockPos != null) {
             event.getPlayer().setRespawnPosition(dimension, blockPos, 0, true, false);
             DynamicDimensionManager.teleport(event.getPlayer(), dimension);
@@ -103,7 +103,9 @@ public class DimensionsMain {
         }
 
         MinecraftServer server = serverLevel.getServer();
-        if (!serverLevel.dimension().location().equals(OVERWORLD) || DimensionStorage.get(server).isLobbySpawned()) {
+        DimensionStorage dimensionStorage = DimensionStorage.get(server);
+
+        if (!serverLevel.dimension().location().equals(OVERWORLD) || dimensionStorage.isLobbySpawned()) {
             return;
         }
 
@@ -111,7 +113,7 @@ public class DimensionsMain {
             ResourceLocation lobbyLocation = FTBDimensionsConfig.DIMENSIONS.lobbyLocation();
 
             if (!serverLevel.dimension().location().equals(OVERWORLD)) {
-                BlockPos dimSpawn = DimensionStorage.get(server).getDimensionSpawnLocations(serverLevel.dimension().location());
+                BlockPos dimSpawn = dimensionStorage.getDimensionSpawnLocation(serverLevel.dimension().location());
                 if (!serverLevel.getSharedSpawnPos().equals(dimSpawn)) {
                     serverLevel.setDefaultSpawnPos(dimSpawn == null ? BlockPos.ZERO.above(1) : dimSpawn, 0f);
                 }
@@ -126,11 +128,11 @@ public class DimensionsMain {
 
             lobby.placeInWorld(serverLevel, lobbyLoc, lobbyLoc, placeSettings, serverLevel.random, Block.UPDATE_ALL);
 
-            DimensionStorage.get(server).setLobbySpawnPos(playerSpawn);
-            DimensionStorage.get(server).setLobbySpawned(true);
+            dimensionStorage.setLobbySpawnPos(playerSpawn);
+            dimensionStorage.setLobbySpawned(true);
 
             serverLevel.removeBlock(playerSpawn, false);
-            LOGGER.info("Spawned lobby structure");
+            LOGGER.info("Spawned lobby structure @ {}", lobbyLoc);
         } catch (ResourceLocationException e) {
             LOGGER.error("invalid lobby resource location: " + e.getMessage());
         }

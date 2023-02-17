@@ -1,9 +1,9 @@
 package dev.ftb.mods.ftbteamdimensions.dimensions;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.ftb.mods.ftbteamdimensions.FTBDimensionsCommands;
+import dev.ftb.mods.ftbteamdimensions.commands.FTBDimensionsCommands;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
-import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionCreatedEvent;
+import dev.ftb.mods.ftbteamdimensions.event.DimensionCreatedEvent;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
@@ -31,7 +31,6 @@ public enum DimensionsManager {
     INSTANCE;
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Random RANDOM = new Random();
 
     @Nullable
     public ResourceKey<Level> getDimension(Player player) {
@@ -81,10 +80,11 @@ public enum DimensionsManager {
                             BlockPos pos0 = locateSpawn(structure);
                             BlockPos blockPos = pos0.offset(-(structure.getSize().getX() / 2), prebuilt.height() - pos0.getY(), -(structure.getSize().getZ() / 2));
 
-                            BlockPos spawnPos = DimensionStorage.get(player.server).getDimensionSpawnLocations(serverLevel.getLevel().dimension().location());
+                            ResourceLocation dimLoc = serverLevel.getLevel().dimension().location();
+                            BlockPos spawnPos = DimensionStorage.get(player.server).getDimensionSpawnLocation(dimLoc);
                             if (spawnPos == null) {
-                                DimensionStorage.get(player.server).addDimensionSpawn(serverLevel.getLevel().dimension().location(), blockPos);
-                                FTBTeamDimensions.LOGGER.info("Adding spawn to dim storage");
+                                DimensionStorage.get(player.server).addDimensionSpawn(dimLoc, blockPos);
+                                FTBTeamDimensions.LOGGER.info("Adding spawnpoint {} to dim storage for {}", blockPos, dimLoc);
                             }
 
                             return blockPos;

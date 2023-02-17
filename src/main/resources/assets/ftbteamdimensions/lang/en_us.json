@@ -7,5 +7,16 @@
   "screens.ftbteamdimensions.select": "Select",
   "screens.ftbteamdimensions.select_start": "Select a start",
   "screens.ftbteamdimensions.select_start_group": "Select a group",
-  "screens.ftbteamdimensions.selected_start": "Selected start"
+  "screens.ftbteamdimensions.selected_start": "Selected start",
+  "ftbteamdimensions.message.not_a_party": "Team %s is not a party team!",
+  "ftbteamdimensions.message.no_dim_for_team": "No team dimension found for team %s!",
+  "ftbteamdimensions.message.missing_dimension": "Can't find dimension %s!",
+  "ftbteamdimensions.message.missing_prebuilt": "Can't find prebuilt structure %s!",
+  "ftbteamdimensions.message.cant_teleport": "Can't teleport home. Go to the overworld lobby and jump through the portal!",
+  "ftbteamdimensions.message.pruned_one": "Successfully pruned dimension '%s'",
+  "ftbteamdimensions.message.pruned_all": "Sucessfully pruned %s dimensions",
+  "ftbteamdimensions.message.restored": "Sucessfully restored dimension '%s'",
+  "ftbteamdimensions.message.no_archived": "No archived dimensions!",
+  "ftbteamdimensions.message.no_dimensions": "No team dimensions!",
+  "ftbteamdimensions.message.dim_header": "--- %s dimension(s) ---"
 }

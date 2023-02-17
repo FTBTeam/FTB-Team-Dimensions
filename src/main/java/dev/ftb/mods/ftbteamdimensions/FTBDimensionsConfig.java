@@ -16,6 +16,7 @@ public class FTBDimensionsConfig {
     public static class CategoryDimensions {
         public final ForgeConfigSpec.BooleanValue clearPlayerInventory;
         public final ForgeConfigSpec.ConfigValue<String> lobbyStructure;
+        public final ForgeConfigSpec.BooleanValue allowNetherPortals;
 
         public CategoryDimensions() {
             COMMON_BUILDER.push("hammers");
@@ -27,6 +28,10 @@ public class FTBDimensionsConfig {
             this.lobbyStructure = COMMON_BUILDER
                     .comment("Resource location of the structure NBT for the lobby")
                     .define("lobbyStructure", FTBTeamDimensions.MOD_ID + ":lobby");
+
+            this.allowNetherPortals = COMMON_BUILDER
+                    .comment("When set to true, nether portals may be constructed in team dimensions")
+                    .define("allowNetherPortals", true);
 
             COMMON_BUILDER.pop();
         }

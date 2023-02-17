@@ -1,7 +1,7 @@
 package dev.ftb.mods.ftbteamdimensions.registry;
 
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
-import dev.ftb.mods.ftbteamdimensions.portal.content.FTBDimensionsPortalBlock;
+import dev.ftb.mods.ftbteamdimensions.block.FTBDimensionsPortalBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;

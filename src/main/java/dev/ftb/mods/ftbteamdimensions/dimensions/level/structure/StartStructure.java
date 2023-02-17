@@ -16,18 +16,18 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 import java.util.Optional;
 
-public class PrebuiltStartStructure extends Structure {
+public class StartStructure extends Structure {
 	//	public static final Codec<PrebuiltStartStructure> CODEC = simpleCodec(PrebuiltStartStructure::new);
-	public static final Codec<PrebuiltStartStructure> CODEC = RecordCodecBuilder.<PrebuiltStartStructure>mapCodec((x) -> x.group(
+	public static final Codec<StartStructure> CODEC = RecordCodecBuilder.<StartStructure>mapCodec((x) -> x.group(
 			settingsCodec(x),
 			HeightProvider.CODEC.fieldOf("start_height").forGetter(s -> s.startHeight),
 			Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(s -> s.projectStartToHeightmap)
-	).apply(x, PrebuiltStartStructure::new)).codec();
+	).apply(x, StartStructure::new)).codec();
 
 	private final HeightProvider startHeight;
 	private final Optional<Heightmap.Types> projectStartToHeightmap;
 
-	private PrebuiltStartStructure(StructureSettings settings, HeightProvider startHeight, Optional<Heightmap.Types> projectStartToHeightmap) {
+	private StartStructure(StructureSettings settings, HeightProvider startHeight, Optional<Heightmap.Types> projectStartToHeightmap) {
 		super(settings);
 		this.startHeight = startHeight;
 		this.projectStartToHeightmap = projectStartToHeightmap;
@@ -52,7 +52,7 @@ public class PrebuiltStartStructure extends Structure {
 			BlockPos blockPos = new BlockPos(x, y + start.height(), z);
 
 			return Optional.of(new GenerationStub(blockPos, builder ->
-					builder.addPiece(new PrebuiltStartStructurePiece(context.structureTemplateManager(), start.structureLocation(), blockPos, template)))
+					builder.addPiece(new StartStructurePiece(context.structureTemplateManager(), start.structureLocation(), blockPos, template)))
 			);
 		}).orElse(Optional.empty());
 

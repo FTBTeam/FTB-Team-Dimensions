@@ -1,8 +1,8 @@
 package dev.ftb.mods.ftbteamdimensions.registry;
 
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
-import dev.ftb.mods.ftbteamdimensions.dimensions.arguments.DimensionCommandArgument;
-import dev.ftb.mods.ftbteamdimensions.dimensions.arguments.PrebuiltCommandArgument;
+import dev.ftb.mods.ftbteamdimensions.commands.arguments.DimensionCommandArgument;
+import dev.ftb.mods.ftbteamdimensions.commands.arguments.PrebuiltCommandArgument;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;

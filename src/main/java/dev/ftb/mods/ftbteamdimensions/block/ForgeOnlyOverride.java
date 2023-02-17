@@ -1,4 +1,4 @@
-package dev.ftb.mods.ftbteamdimensions.portal;
+package dev.ftb.mods.ftbteamdimensions.block;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

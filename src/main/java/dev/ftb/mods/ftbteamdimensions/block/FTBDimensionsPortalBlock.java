@@ -1,9 +1,8 @@
-package dev.ftb.mods.ftbteamdimensions.portal.content;
+package dev.ftb.mods.ftbteamdimensions.block;
 
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
-import dev.ftb.mods.ftbteamdimensions.dimensions.net.ShowSelectionGui;
-import dev.ftb.mods.ftbteamdimensions.portal.ForgeOnlyOverride;
+import dev.ftb.mods.ftbteamdimensions.net.ShowSelectionGui;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

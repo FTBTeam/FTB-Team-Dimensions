@@ -3,7 +3,7 @@ package dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import dev.ftb.mods.ftbteamdimensions.dimensions.net.SyncPrebuiltStructures;
+import dev.ftb.mods.ftbteamdimensions.net.SyncPrebuiltStructures;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -57,7 +57,7 @@ public class PrebuiltStructureManager {
         protected void apply(Map<ResourceLocation, JsonElement> object, ResourceManager resourceManager, ProfilerFiller profiler) {
             getServerInstance().STRUCTURES.clear();
 
-            object.forEach((id, json) -> getServerInstance().STRUCTURES.put(id, PrebuiltStructure.fromJson(json)));
+            object.forEach((id, json) -> PrebuiltStructure.fromJson(json).ifPresent(s -> getServerInstance().STRUCTURES.put(id, s)));
 
             if (ServerLifecycleHooks.getCurrentServer() != null) {
                 new SyncPrebuiltStructures(PrebuiltStructureManager.getServerInstance()).sendToAll(ServerLifecycleHooks.getCurrentServer());

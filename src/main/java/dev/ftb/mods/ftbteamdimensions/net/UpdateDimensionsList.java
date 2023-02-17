@@ -1,9 +1,9 @@
-package dev.ftb.mods.ftbteamdimensions.dimensions.net;
+package dev.ftb.mods.ftbteamdimensions.net;
 
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.networking.simple.BaseS2CMessage;
 import dev.architectury.networking.simple.MessageType;
-import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsClient;
+import dev.ftb.mods.ftbteamdimensions.client.DimensionsClient;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;

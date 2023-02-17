@@ -1,4 +1,4 @@
-package dev.ftb.mods.ftbteamdimensions.dimensions.level;
+package dev.ftb.mods.ftbteamdimensions.event;
 
 import dev.ftb.mods.ftbteams.data.Team;
 import net.minecraft.server.level.ServerLevel;

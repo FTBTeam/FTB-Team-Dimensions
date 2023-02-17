@@ -26,7 +26,8 @@ The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structur
   "name": "Simple Island",
   "structure_set": "ftbteamdimensions:default",
   "height": 64,
-  "dimension_type": "ftbteamdimensions:default"
+  "dimension_type": "ftbteamdimensions:default",
+  "preview_image": "ftbteamdimensions:textures/spawn/island1.png"
 }
 ```
 
@@ -45,6 +46,8 @@ The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structur
   * Defaults to 64. **TODO support for surface-relative Y values**.
 * "dimension_type" is optional, and determines the dimension type used for created dimensions
   * Defaults to `ftbteamdimensions:default`, an overworld-like dimension type
+* "preview_image" is optional, and points to a texture (which should be 128x64) to be shown in the structure selection GUI; typically a screenshot of the structure, but could be any image
+  * Default texture for `<modname>:<id>` is `<modname>:textures/spawn/<id>.png`
 
 ## Structure NBT
 
