@@ -1,16 +1,17 @@
 package dev.ftb.mods.ftbteamdimensions.dimensions.level;
 
+import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsMain;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructure;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
@@ -46,9 +47,11 @@ public class VoidChunkGenerator extends FlatLevelSource implements PrebuiltStruc
         HolderSet<StructureSet> structures = structureSetRegistry.getOrCreateTag(TagKey.create(Registry.STRUCTURE_SET_REGISTRY, structureSetId));
 
         Registry<Biome> biomeRegistry = registryAccess.registryOrThrow(Registry.BIOME_REGISTRY);
+        ResourceKey<Biome> biomeKey = ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(FTBDimensionsConfig.DIMENSIONS.singleBiomeName.get()));
+
         FlatLevelGeneratorSettings settings = new FlatLevelGeneratorSettings(Optional.empty(), biomeRegistry)
                 .withLayers(List.of(new FlatLayerInfo(1, Blocks.AIR)), Optional.of(structures));
-        settings.setBiome(biomeRegistry.getOrCreateHolder(Biomes.THE_VOID).result().orElseThrow());
+        settings.setBiome(biomeRegistry.getOrCreateHolder(biomeKey).result().orElseThrow());
 
         return new VoidChunkGenerator(structureSetRegistry, settings, prebuiltStructureId);
     }

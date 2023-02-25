@@ -17,6 +17,7 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.BooleanValue clearPlayerInventory;
         public final ForgeConfigSpec.ConfigValue<String> lobbyStructure;
         public final ForgeConfigSpec.BooleanValue allowNetherPortals;
+        public final ForgeConfigSpec.ConfigValue<String> singleBiomeName;
 
         public CategoryDimensions() {
             COMMON_BUILDER.push("hammers");
@@ -32,6 +33,10 @@ public class FTBDimensionsConfig {
             this.allowNetherPortals = COMMON_BUILDER
                     .comment("When set to true, nether portals may be constructed in team dimensions")
                     .define("allowNetherPortals", true);
+
+            this.singleBiomeName = COMMON_BUILDER
+                    .comment("When generating dimensions with a single biome, this is the biome name to use")
+                    .define("singleBiomeName", "minecraft:the_void");
 
             COMMON_BUILDER.pop();
         }
