@@ -1,12 +1,12 @@
 package dev.ftb.mods.ftbteamdimensions.dimensions;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import dev.ftb.mods.ftbteamdimensions.commands.FTBDimensionsCommands;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
-import dev.ftb.mods.ftbteamdimensions.event.DimensionCreatedEvent;
+import dev.ftb.mods.ftbteamdimensions.commands.FTBDimensionsCommands;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
+import dev.ftb.mods.ftbteamdimensions.event.DimensionCreatedEvent;
 import dev.ftb.mods.ftbteams.FTBTeamsAPI;
 import dev.ftb.mods.ftbteams.data.Team;
 import dev.ftb.mods.ftbteams.data.TeamType;
@@ -23,9 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.Random;
-
-import static dev.ftb.mods.ftbteamdimensions.dimensions.DimensionUtils.locateSpawn;
 
 public enum DimensionsManager {
     INSTANCE;
@@ -77,16 +74,13 @@ public enum DimensionsManager {
         // Attempt to load the structure and get the spawn location of the island / structure
         var spawnPoint = PrebuiltStructureManager.getServerInstance().getStructure(prebuiltId)
                 .map(prebuilt -> player.server.getStructureManager().get(prebuilt.structureLocation()).map(structure -> {
-                            BlockPos pos0 = locateSpawn(structure);
-                            BlockPos blockPos = pos0.offset(-(structure.getSize().getX() / 2), prebuilt.height() - pos0.getY(), -(structure.getSize().getZ() / 2));
-
+                            BlockPos blockPos = prebuilt.spawnOverride().orElse(new BlockPos(0, prebuilt.height(), 0));
                             ResourceLocation dimLoc = serverLevel.getLevel().dimension().location();
                             BlockPos spawnPos = DimensionStorage.get(player.server).getDimensionSpawnLocation(dimLoc);
                             if (spawnPos == null) {
                                 DimensionStorage.get(player.server).addDimensionSpawn(dimLoc, blockPos);
                                 FTBTeamDimensions.LOGGER.info("Adding spawnpoint {} to dim storage for {}", blockPos, dimLoc);
                             }
-
                             return blockPos;
                         }).orElse(BlockPos.ZERO)
                 ).orElse(BlockPos.ZERO);

@@ -6,6 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 import static dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions.rl;
 
-public record PrebuiltStructure(ResourceLocation id, ResourceLocation structureLocation, String name, String author,
+public record PrebuiltStructure(ResourceLocation id, ResourceLocation structureLocation, String name, String author, Optional<BlockPos> spawnOverride,
                                 ResourceLocation structureSetId, int height, ResourceLocation dimensionType, ResourceLocation previewImage)
 {
     public static final ResourceLocation DEFAULT_PREVIEW = rl("default");
@@ -30,6 +31,8 @@ public record PrebuiltStructure(ResourceLocation id, ResourceLocation structureL
                     .forGetter(PrebuiltStructure::name),
             Codec.STRING.optionalFieldOf("author", "FTB Team")
                     .forGetter(PrebuiltStructure::author),
+            BlockPos.CODEC.optionalFieldOf("spawn_override")
+                    .forGetter(PrebuiltStructure::spawnOverride),
             ResourceLocation.CODEC.optionalFieldOf("structure_set", DEFAULT_STRUCTURE_SET)
                     .forGetter(PrebuiltStructure::structureSetId),
             Codec.INT.optionalFieldOf("height", 64)
@@ -51,12 +54,13 @@ public record PrebuiltStructure(ResourceLocation id, ResourceLocation structureL
         ResourceLocation structureLocation = buf.readResourceLocation();
         String name = buf.readUtf(256);
         String author = buf.readUtf(256);
+        Optional<BlockPos> spawnOverride = buf.readBoolean() ? Optional.of(buf.readBlockPos()) : Optional.empty();
         int height = buf.readVarInt();
         ResourceLocation structureSetId = buf.readResourceLocation();
         ResourceLocation dimensionType = buf.readResourceLocation();
         ResourceLocation previewImage = buf.readResourceLocation();
 
-        return new PrebuiltStructure(id, structureLocation, name, author, structureSetId, height, dimensionType, previewImage);
+        return new PrebuiltStructure(id, structureLocation, name, author, spawnOverride, structureSetId, height, dimensionType, previewImage);
     }
 
     public ResourceLocation previewImage() {
@@ -70,6 +74,8 @@ public record PrebuiltStructure(ResourceLocation id, ResourceLocation structureL
         buf.writeResourceLocation(structureLocation);
         buf.writeUtf(name);
         buf.writeUtf(author);
+        buf.writeBoolean(spawnOverride.isPresent());
+        spawnOverride.ifPresent(buf::writeBlockPos);
         buf.writeVarInt(height);
         buf.writeResourceLocation(structureSetId);
         buf.writeResourceLocation(dimensionType);
