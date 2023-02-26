@@ -4,9 +4,13 @@
 
 FTB Team Dimensions allows dimensions to be dynamically created for teams (FTB Teams is a required dependency).
 Players join the overworld in a prebuilt lobby structure with a portal, and on entering the portal get the option
-to choose from one or more "island" structures in a new dimension which will be created for them.
+to choose from one or more "island" structures in a new dimension which will be created for their team. The party team will
+also be auto-created if it does not exist yet. New players can join the team in the usual way, and will be ported to
+the team's dimension on joining.
 
-Currently, the only dimension chunk generation type is a void dimension with a single "void" biome, but more flexibility is planned.
+Currently, the only dimension chunk generation type is a void dimension with a single "minecraft:void" biome; you can
+override the biome via the `singleBiomeName` config setting. More flexibility in chunk generation is planned for 
+future versions.
 
 ## Configuration
 
@@ -27,7 +31,8 @@ The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structur
   "structure_set": "ftbteamdimensions:default",
   "height": 64,
   "dimension_type": "ftbteamdimensions:default",
-  "preview_image": "ftbteamdimensions:textures/spawn/island1.png"
+  "preview_image": "ftbteamdimensions:textures/spawn/island1.png",
+  "spawn_override": [ 0, 64, 0 ]
 }
 ```
 
@@ -48,6 +53,8 @@ The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structur
   * Defaults to `ftbteamdimensions:default`, an overworld-like dimension type
 * "preview_image" is optional, and points to a texture (which should be 128x64) to be shown in the structure selection GUI; typically a screenshot of the structure, but could be any image
   * Default texture for `<modname>:<id>` is `<modname>:textures/spawn/<id>.png`
+* "spawn_override" is optional, and can be used to spawn the player at a non-default position
+  * Default position is (0, HEIGHT, 0), where HEIGHT is the island Y-level (see "height" above)
 
 ## Structure NBT
 
@@ -57,7 +64,7 @@ There is one important requirement: all structures **must** contain one Structur
 determine where players will spawn in both the overworld and dimensions that are created.
 
 Structures created will always be positioned with the spawn point at (X,Z) = (0,0). The data structure block is replaced with air when the
-structure is actually placed into the world. 
+structure is actually placed into the world. The player will spawn with their feet in this block by default (but see the "spawn_override" field above).
 
 The default lobby structure is at `data/ftbteamdimensions/structures/lobby.nbt`, but this can be changed in one of two ways:
 * in mod config (see `lobbyStructure` in `ftbteamdimensions-common.toml`)

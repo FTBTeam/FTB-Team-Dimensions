@@ -47,6 +47,10 @@ repositories {
     maven {
         url "https://maven.saps.dev/minecraft"
     }
+
+    maven {
+        url "https://maven.nanite.dev/releases"
+    }
 }
 
 dependencies {
@@ -61,6 +65,7 @@ dependencies {
     forge "net.minecraftforge:forge:${project.forge_version}"
 
     modImplementation("dev.ftb.mods:ftb-teams-forge:${teams_version}")
+    modLocalRuntime("com.sunekaer.mods:structure-expansion:${structure_expansion_version}")
 }
 
 processResources {
