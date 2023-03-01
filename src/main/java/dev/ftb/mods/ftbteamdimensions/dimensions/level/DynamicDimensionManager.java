@@ -4,7 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.math.Vector3d;
 import com.mojang.serialization.Lifecycle;
+import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
+import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.MultiBiomeVoidChunkGenerator;
+import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.SimpleVoidChunkGenerator;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructure;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
 import dev.ftb.mods.ftbteamdimensions.net.UpdateDimensionsList;
@@ -66,7 +69,10 @@ public class DynamicDimensionManager {
 		);
 
 		// TODO allow specification of other generation types
-		ChunkGenerator chunkGenerator = VoidChunkGenerator.simpleVoidChunkGen(registryAccess, prebuiltStructureId);
+		ChunkGenerator chunkGenerator = FTBDimensionsConfig.DIMENSIONS.singleBiomeDimension.get() ?
+				SimpleVoidChunkGenerator.simpleVoidChunkGen(registryAccess, prebuiltStructureId) :
+				MultiBiomeVoidChunkGenerator.multiBiomeVoidChunkGen(registryAccess, prebuiltStructureId);
+
 		LevelStem dimension = new LevelStem(typeHolder, chunkGenerator);
 
 		ChunkProgressListener chunkProgressListener = server.progressListenerFactory.create(11);

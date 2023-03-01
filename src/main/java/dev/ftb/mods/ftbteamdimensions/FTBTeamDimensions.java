@@ -40,6 +40,7 @@ public class FTBTeamDimensions {
 
         MOD_BUS.addListener(this::commonSetup);
         MOD_BUS.addListener(this::clientSetup);
+        MOD_BUS.addListener(ModWorldGen::setup);
 
         ModBlocks.BLOCK_REGISTRY.register(MOD_BUS);
         ModBlocks.ITEM_REGISTRY.register(MOD_BUS);

@@ -17,6 +17,7 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.BooleanValue clearPlayerInventory;
         public final ForgeConfigSpec.ConfigValue<String> lobbyStructure;
         public final ForgeConfigSpec.BooleanValue allowNetherPortals;
+        public final ForgeConfigSpec.BooleanValue singleBiomeDimension;
         public final ForgeConfigSpec.ConfigValue<String> singleBiomeName;
 
         public CategoryDimensions() {
@@ -34,8 +35,12 @@ public class FTBDimensionsConfig {
                     .comment("When set to true, nether portals may be constructed in team dimensions")
                     .define("allowNetherPortals", true);
 
+            this.singleBiomeDimension = COMMON_BUILDER
+                    .comment("If true, generate a void dimension with only a single biome. Otherwise, generate a void dimension with overworld-like biome distribution")
+                    .define("singleBiomeDimension", false);
+
             this.singleBiomeName = COMMON_BUILDER
-                    .comment("When generating dimensions with a single biome, this is the biome name to use")
+                    .comment("If 'singleBiomeDimension' is true, this is the ID of the biome to generate")
                     .define("singleBiomeName", "minecraft:the_void");
 
             COMMON_BUILDER.pop();

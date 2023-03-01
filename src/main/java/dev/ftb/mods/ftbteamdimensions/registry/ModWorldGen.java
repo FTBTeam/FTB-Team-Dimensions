@@ -2,6 +2,8 @@ package dev.ftb.mods.ftbteamdimensions.registry;
 
 import com.mojang.serialization.Codec;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
+import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.MultiBiomeVoidChunkGenerator;
+import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.SimpleVoidChunkGenerator;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.structure.StartStructure;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.structure.StartStructurePiece;
 import net.minecraft.core.Registry;
@@ -9,6 +11,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModWorldGen {
@@ -25,5 +28,12 @@ public class ModWorldGen {
 
     private static <T extends Structure> StructureType<T> explicitStructureTypeTyping(Codec<T> structureCodec) {
         return () -> structureCodec;
+    }
+
+    public static void setup(RegisterEvent event) {
+        if (event.getRegistryKey().equals(Registry.CHUNK_GENERATOR_REGISTRY)) {
+            event.register(Registry.CHUNK_GENERATOR_REGISTRY, FTBTeamDimensions.rl("multi_biome_void"), () -> MultiBiomeVoidChunkGenerator.CODEC);
+            event.register(Registry.CHUNK_GENERATOR_REGISTRY, FTBTeamDimensions.rl("simple_void"), () -> SimpleVoidChunkGenerator.CODEC);
+        }
     }
 }

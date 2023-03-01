@@ -4,13 +4,17 @@
 
 FTB Team Dimensions allows dimensions to be dynamically created for teams (FTB Teams is a required dependency).
 Players join the overworld in a prebuilt lobby structure with a portal, and on entering the portal get the option
-to choose from one or more "island" structures in a new dimension which will be created for their team. The party team will
-also be auto-created if it does not exist yet. New players can join the team in the usual way, and will be ported to
-the team's dimension on joining.
+to choose from one or more "island" structures in a new dimension which will be created for their team. The party team
+will also be auto-created if it does not exist yet. New players can join the team in the usual way, and will be
+immediately ported to the team's existing dimension upon joining.
 
-Currently, the only dimension chunk generation type is a void dimension with a single "minecraft:void" biome; you can
-override the biome via the `singleBiomeName` config setting. More flexibility in chunk generation is planned for 
-future versions.
+Currently, there are two chunk generation types, both for simple void dimensions:
+
+* Multi-biome generation with an overworld-like biome distribution; this is the default
+* Single biome generation; set `singleBiomeDimension` in mod config to true to enforce a single biome for the entire dimension.
+  * You can override the biome that is used via the `singleBiomeName` config setting (default is `minecraft:the_void`)
+
+More flexibility is planned in terms of types of world-gen in the future.
 
 ## Configuration
 
@@ -21,13 +25,16 @@ prebuilt "islands" which will be pre-generated in the new dimension (always at t
 `ftbdim_prebuilt_structures` datapack type, which defines which structures are available to the player (when the player
 first enters the lobby portal, one entry per known `ftbdim_prebuilt_structures` will be shown in the GUI).
 
-The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structures/island1.json`) looks like this:
+The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structures/island1.json`) looks something like (with optional
+fields not necessarily included in the actual file):
 
-```json
+```json5
 {
   "id": "ftbteamdimensions:island1",
   "structure": "ftbteamdimensions:spawn/island1",
   "name": "Simple Island",
+  // optional fields below here
+  "author": "FTB Team",
   "structure_set": "ftbteamdimensions:default",
   "height": 64,
   "dimension_type": "ftbteamdimensions:default",
@@ -40,7 +47,7 @@ The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structur
 * "structure" field is mandatory and determines the NBT structure file which will be used
   * See `data/ftbteamdimensions/structures/spawn/island1.json` for the default island, which is a tiny island of grass and dirt
 * "name" field is mandatory and is the name displayed in the player's GUI when selecting a structure
-  * This can be a literal string or translation key
+  * This can be a literal string or a translation key
 * "author" field is optional and defaults to "FTB Team" - displayed as "by <author>" in the player's GUI when selecting a structure
   * this is a literal string
 * "structure_set" field is optional and is the structure set tag to use
@@ -60,12 +67,16 @@ The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structur
 
 Structure files (both for the overworld lobby and dimension island structures) are standard vanilla NBT structures, as saved
 via [Structure Blocks](https://minecraft.fandom.com/wiki/Structure_Block).
-There is one important requirement: all structures **must** contain one Structure Block in data mode with the custom data tag `spawn_point`. This is used to
-determine where players will spawn in both the overworld and dimensions that are created.
+There is one important requirement: all structures **must** contain one Structure Block in data mode with the custom data 
+tag `spawn_point`. This is used to determine where players will spawn in both the overworld lobby and in team dimensions
+that are created.
 
-Structures created will always be positioned with the spawn point at (X,Z) = (0,0). The data structure block is replaced with air when the
-structure is actually placed into the world. The player will spawn with their feet in this block by default (but see the "spawn_override" field above).
+Structures created will always be positioned with the `spawn_point` block at (X,Y,Z) = (0,H,0), where H = the "height" 
+field from the prebuilt structure JSON above. The data structure block is replaced with air when the structure is
+actually placed into the world, and the player will spawn with their feet in this block by default (but see the
+"spawn_override" field above).
 
-The default lobby structure is at `data/ftbteamdimensions/structures/lobby.nbt`, but this can be changed in one of two ways:
+The default overworld lobby structure is at `data/ftbteamdimensions/structures/lobby.nbt`, but this can be changed 
+in one of two ways:
 * in mod config (see `lobbyStructure` in `ftbteamdimensions-common.toml`)
 * or simply overwrite it via datapack!

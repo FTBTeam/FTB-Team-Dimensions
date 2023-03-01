@@ -1,7 +1,10 @@
-package dev.ftb.mods.ftbteamdimensions.dimensions.level;
+package dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsMain;
+import dev.ftb.mods.ftbteamdimensions.dimensions.level.PrebuiltStructureProvider;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructure;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
 import net.minecraft.core.HolderSet;
@@ -27,10 +30,18 @@ import java.util.Optional;
 /**
  * Simple-minded void chunk generator (single biome only)
  */
-public class VoidChunkGenerator extends FlatLevelSource implements PrebuiltStructureProvider {
+public class SimpleVoidChunkGenerator extends FlatLevelSource implements PrebuiltStructureProvider {
+    public static final Codec<SimpleVoidChunkGenerator> CODEC = RecordCodecBuilder.create(
+            instance -> commonCodec(instance)
+                    .and(instance.group(
+                            FlatLevelGeneratorSettings.CODEC.fieldOf("settings").forGetter(FlatLevelSource::settings),
+                            ResourceLocation.CODEC.fieldOf("prebuilt_structure_id").forGetter(SimpleVoidChunkGenerator::getPrebuiltStructureId)
+                    ))
+                    .apply(instance, instance.stable(SimpleVoidChunkGenerator::new)));
+
     private final ResourceLocation prebuiltStructureId;
 
-    private VoidChunkGenerator(Registry<StructureSet> structureSets, FlatLevelGeneratorSettings settings, ResourceLocation prebuiltStructureId) {
+    private SimpleVoidChunkGenerator(Registry<StructureSet> structureSets, FlatLevelGeneratorSettings settings, ResourceLocation prebuiltStructureId) {
         super(structureSets, settings);
         this.prebuiltStructureId = prebuiltStructureId;
     }
@@ -40,7 +51,7 @@ public class VoidChunkGenerator extends FlatLevelSource implements PrebuiltStruc
         return prebuiltStructureId;
     }
 
-    static ChunkGenerator simpleVoidChunkGen(RegistryAccess registryAccess, ResourceLocation prebuiltStructureId) {
+    public static ChunkGenerator simpleVoidChunkGen(RegistryAccess registryAccess, ResourceLocation prebuiltStructureId) {
         Registry<StructureSet> structureSetRegistry = registryAccess.registryOrThrow(Registry.STRUCTURE_SET_REGISTRY);
         ResourceLocation structureSetId = PrebuiltStructureManager.getServerInstance().getStructure(prebuiltStructureId)
                 .map(PrebuiltStructure::structureSetId).orElse(PrebuiltStructure.DEFAULT_STRUCTURE_SET);
@@ -53,7 +64,7 @@ public class VoidChunkGenerator extends FlatLevelSource implements PrebuiltStruc
                 .withLayers(List.of(new FlatLayerInfo(1, Blocks.AIR)), Optional.of(structures));
         settings.setBiome(biomeRegistry.getOrCreateHolder(biomeKey).result().orElseThrow());
 
-        return new VoidChunkGenerator(structureSetRegistry, settings, prebuiltStructureId);
+        return new SimpleVoidChunkGenerator(structureSetRegistry, settings, prebuiltStructureId);
     }
 
     @Override
@@ -74,5 +85,10 @@ public class VoidChunkGenerator extends FlatLevelSource implements PrebuiltStruc
     @Override
     public int getBaseHeight(int x, int z, Heightmap.Types type, LevelHeightAccessor level, RandomState random) {
         return DimensionsMain.SIZE - 1;
+    }
+
+    @Override
+    protected Codec<? extends ChunkGenerator> codec() {
+        return CODEC;
     }
 }
