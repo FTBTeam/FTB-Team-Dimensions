@@ -6,6 +6,7 @@ import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsMain;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
+import dev.ftb.mods.ftbteamdimensions.net.FTBDimensionsNet;
 import dev.ftb.mods.ftbteamdimensions.registry.ModArgumentTypes;
 import dev.ftb.mods.ftbteamdimensions.registry.ModBlocks;
 import dev.ftb.mods.ftbteamdimensions.registry.ModWorldGen;
@@ -51,6 +52,8 @@ public class FTBTeamDimensions {
         MinecraftForge.EVENT_BUS.addListener(this::commandsSetup);
         MinecraftForge.EVENT_BUS.addListener(this::reloadListener);
         MinecraftForge.EVENT_BUS.addListener(this::dimensionChanged);
+
+        FTBDimensionsNet.init();
     }
 
     public static ResourceLocation rl(String path) {
