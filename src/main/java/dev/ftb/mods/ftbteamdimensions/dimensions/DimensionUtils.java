@@ -3,12 +3,15 @@ package dev.ftb.mods.ftbteamdimensions.dimensions;
 import com.google.common.collect.ImmutableList;
 import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
+import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.MultiBiomeVoidChunkGenerator;
+import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.SimpleVoidChunkGenerator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.properties.StructureMode;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -46,5 +49,10 @@ public class DimensionUtils {
     public static boolean isPortalDimension(Level level) {
         return FTBDimensionsConfig.DIMENSIONS.allowNetherPortals.get()
                 && level.dimension().location().getNamespace().equals(FTBTeamDimensions.MOD_ID);
+    }
+
+    public static boolean isVoidChunkGen(ChunkGenerator chunkGenerator) {
+        return chunkGenerator instanceof SimpleVoidChunkGenerator
+                || chunkGenerator instanceof MultiBiomeVoidChunkGenerator;
     }
 }
