@@ -21,7 +21,7 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.ConfigValue<String> singleBiomeName;
 
         public CategoryDimensions() {
-            COMMON_BUILDER.push("hammers");
+            COMMON_BUILDER.push("general");
 
             this.clearPlayerInventory = COMMON_BUILDER
                     .comment("When set to true, the players inventory will be cleared when leaving a team")

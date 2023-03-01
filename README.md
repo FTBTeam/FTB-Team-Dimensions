@@ -45,7 +45,7 @@ fields not necessarily included in the actual file):
 
 * "id" field is mandatory, unique, and should correspond to the JSON filename
 * "structure" field is mandatory and determines the NBT structure file which will be used
-  * See `data/ftbteamdimensions/structures/spawn/island1.json` for the default island, which is a tiny island of grass and dirt
+  * See `data/ftbteamdimensions/structures/spawn/island1.nbt` for the default island, which is a tiny island of grass and dirt
 * "name" field is mandatory and is the name displayed in the player's GUI when selecting a structure
   * This can be a literal string or a translation key
 * "author" field is optional and defaults to "FTB Team" - displayed as "by <author>" in the player's GUI when selecting a structure
