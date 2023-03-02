@@ -2,7 +2,7 @@
   "type": "ftbteamdimensions:start",
   "biomes": "#ftbteamdimensions:has_structure/start",
   "spawn_overrides": {},
-  "step": "surface_structures",
+  "step": "top_layer_modification",
   "start_height": {
     "absolute": 64
   }
