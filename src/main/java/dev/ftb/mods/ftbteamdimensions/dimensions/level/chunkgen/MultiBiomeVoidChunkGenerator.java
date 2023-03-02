@@ -90,7 +90,7 @@ public class MultiBiomeVoidChunkGenerator extends NoiseBasedChunkGenerator imple
 
     @Override
     public Stream<Holder<StructureSet>> possibleStructureSets() {
-        return startStructure.stream();
+        return Stream.concat(startStructure.stream(), super.possibleStructureSets());
     }
 
     @Override
