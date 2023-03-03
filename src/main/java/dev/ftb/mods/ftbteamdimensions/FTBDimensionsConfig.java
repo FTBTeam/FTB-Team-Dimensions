@@ -18,6 +18,7 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.ConfigValue<String> lobbyStructure;
         public final ForgeConfigSpec.BooleanValue allowNetherPortals;
         public final ForgeConfigSpec.BooleanValue singleBiomeDimension;
+        public final ForgeConfigSpec.BooleanValue allowVoidFeatureGen;
         public final ForgeConfigSpec.ConfigValue<String> singleBiomeName;
 
         public CategoryDimensions() {
@@ -34,6 +35,10 @@ public class FTBDimensionsConfig {
             this.allowNetherPortals = COMMON_BUILDER
                     .comment("When set to true, nether portals may be constructed in team dimensions")
                     .define("allowNetherPortals", true);
+
+            this.allowVoidFeatureGen = COMMON_BUILDER
+                    .comment("When set to false, no features may generate in void dimensions. Some features (e.g. icebergs) will try to generate in applicable biomes without any checks for surrounding blocks.")
+                    .define("allowVoidFeatureGen", false);
 
             this.singleBiomeDimension = COMMON_BUILDER
                     .comment("If true, generate a void dimension with only a single biome. Otherwise, generate a void dimension with overworld-like biome distribution")

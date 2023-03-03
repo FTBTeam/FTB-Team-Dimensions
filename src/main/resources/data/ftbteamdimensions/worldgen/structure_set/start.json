@@ -1,13 +1,8 @@
 {
   "placement": {
-    "type": "minecraft:concentric_rings",
-    "distance": 0,
-    "count": 1,
-    "separation": 0,
-    "preferred_biomes": "#minecraft:overworld",
-    "spread": 1,
-    "salt": 0,
-    "spacing": 0
+    "type": "ftbteamdimensions:one_chunk_only",
+    "cx": 0,
+    "cz": 0
   },
   "structures": [
     {

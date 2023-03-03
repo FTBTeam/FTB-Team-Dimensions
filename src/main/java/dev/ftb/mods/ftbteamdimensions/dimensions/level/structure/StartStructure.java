@@ -17,7 +17,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import java.util.Optional;
 
 public class StartStructure extends Structure {
-	//	public static final Codec<PrebuiltStartStructure> CODEC = simpleCodec(PrebuiltStartStructure::new);
 	public static final Codec<StartStructure> CODEC = RecordCodecBuilder.<StartStructure>mapCodec((x) -> x.group(
 			settingsCodec(x),
 			HeightProvider.CODEC.fieldOf("start_height").forGetter(s -> s.startHeight),
@@ -35,9 +34,7 @@ public class StartStructure extends Structure {
 
 	@Override
 	public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
-		if (!(context.chunkGenerator() instanceof PrebuiltStructureProvider provider)
-				|| context.chunkPos().getMinBlockX() != 0 || context.chunkPos().getMinBlockZ() != 0)
-		{
+		if (!(context.chunkGenerator() instanceof PrebuiltStructureProvider provider)) {
 			return Optional.empty();
 		}
 
