@@ -2,9 +2,11 @@ package dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.PrebuiltStructureProvider;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructure;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
+import dev.ftb.mods.ftbteamdimensions.mixin.ChunkGeneratorMixin;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -29,6 +31,7 @@ import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.structure.StructureSet;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Stream;
@@ -68,7 +71,14 @@ public class MultiBiomeVoidChunkGenerator extends NoiseBasedChunkGenerator imple
         Holder<NoiseGeneratorSettings> settings = registryAccess.registryOrThrow(Registry.NOISE_GENERATOR_SETTINGS_REGISTRY)
                 .getHolderOrThrow(NoiseGeneratorSettings.OVERWORLD);
 
-        return new MultiBiomeVoidChunkGenerator(structureSetRegistry, noiseParams, biomeSource, settings, prebuiltStructureId);
+        MultiBiomeVoidChunkGenerator gen = new MultiBiomeVoidChunkGenerator(structureSetRegistry, noiseParams, biomeSource, settings, prebuiltStructureId);
+
+        if (!FTBDimensionsConfig.DIMENSIONS.allowVoidFeatureGen.get()) {
+            //noinspection ConstantConditions
+            ((ChunkGeneratorMixin) gen).setFeaturesPerStep(List::of);
+        }
+
+        return gen;
     }
 
     private MultiBiomeVoidChunkGenerator(Registry<StructureSet> structureSets, Registry<NormalNoise.NoiseParameters> noises, BiomeSource biomeSource, Holder<NoiseGeneratorSettings> settings, ResourceLocation prebuiltStructureId) {
