@@ -29,7 +29,6 @@ import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.storage.DerivedLevelData;
-import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WorldData;
 import net.minecraftforge.common.MinecraftForge;
@@ -81,9 +80,7 @@ public class DynamicDimensionManager {
 		WorldData worldData = server.getWorldData();
 		WorldGenSettings worldGenSettings = worldData.worldGenSettings();
 
-		ServerLevelData levelData = FTBDimensionsConfig.DIMENSIONS.perDimensionLevelData.get() ?
-				new PrimaryLevelData(worldData.getLevelSettings(), worldGenSettings, Lifecycle.stable()) :
-				new DerivedLevelData(worldData, worldData.overworldData());
+		ServerLevelData levelData = new DerivedLevelData(worldData, worldData.overworldData());
 
 		((MappedRegistry<LevelStem>) worldGenSettings.dimensions()).register(dimensionKey, dimension, Lifecycle.stable());
 

@@ -11,13 +11,18 @@ import dev.ftb.mods.ftbteamdimensions.registry.ModArgumentTypes;
 import dev.ftb.mods.ftbteamdimensions.registry.ModBlocks;
 import dev.ftb.mods.ftbteamdimensions.registry.ModWorldGen;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
+import net.minecraftforge.event.level.SleepFinishedTimeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -53,6 +58,7 @@ public class FTBTeamDimensions {
         MinecraftForge.EVENT_BUS.addListener(this::commandsSetup);
         MinecraftForge.EVENT_BUS.addListener(this::reloadListener);
         MinecraftForge.EVENT_BUS.addListener(this::dimensionChanged);
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::onSleepFinished);
 
         FTBDimensionsNet.init();
     }
@@ -73,11 +79,11 @@ public class FTBTeamDimensions {
         FTBDimensionsCommands.register(event.getDispatcher());
     }
 
-    private void reloadListener(AddReloadListenerEvent event) {
+    private void reloadListener(final AddReloadListenerEvent event) {
         event.addListener(new PrebuiltStructureManager.ReloadListener());
     }
 
-    private void dimensionChanged(EntityTravelToDimensionEvent event) {
+    private void dimensionChanged(final EntityTravelToDimensionEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             if (player.getLevel().dimension().equals(Level.NETHER) && event.getDimension().equals(Level.OVERWORLD)) {
                 // returning from a Nether portal: intercept this and send the player to their island spawnpoint instead
@@ -85,6 +91,26 @@ public class FTBTeamDimensions {
                 if (dim != null) {
                     event.setCanceled(true);
                     player.server.executeIfPossible(() -> DynamicDimensionManager.teleport(player, dim));
+                }
+            }
+        }
+    }
+
+    private void onSleepFinished(final SleepFinishedTimeEvent event) {
+        if (event.getLevel() instanceof ServerLevel level && level.dimension().location().getNamespace().equals(MOD_ID)) {
+            // player has slept in a dynamic dimension
+            // sleeping in dynamic dimensions doesn't work in general: https://bugs.mojang.com/browse/MC-188578
+            // best we can do here is advance the overworld time
+            ServerLevel overworld = level.getServer().getLevel(Level.OVERWORLD);
+            if (overworld != null) {
+                overworld.setDayTime(event.getNewTime());
+                if (overworld.getGameRules().getBoolean(GameRules.RULE_WEATHER_CYCLE) && overworld.isRaining()) {
+                    if (overworld.getLevelData() instanceof ServerLevelData data) {
+                        data.setRainTime(0);
+                        data.setRaining(false);
+                        data.setThunderTime(0);
+                        data.setThundering(false);
+                    }
                 }
             }
         }

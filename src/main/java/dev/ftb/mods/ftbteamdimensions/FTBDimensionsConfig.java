@@ -19,7 +19,6 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.BooleanValue allowNetherPortals;
         public final ForgeConfigSpec.BooleanValue singleBiomeDimension;
         public final ForgeConfigSpec.BooleanValue allowVoidFeatureGen;
-        public final ForgeConfigSpec.BooleanValue perDimensionLevelData;
         public final ForgeConfigSpec.ConfigValue<String> singleBiomeName;
 
         public CategoryDimensions() {
@@ -44,10 +43,6 @@ public class FTBDimensionsConfig {
             this.singleBiomeDimension = COMMON_BUILDER
                     .comment("If true, generate a void dimension with only a single biome. Otherwise, generate a void dimension with overworld-like biome distribution")
                     .define("singleBiomeDimension", false);
-
-            this.perDimensionLevelData = COMMON_BUILDER
-                    .comment("If true, every team dimension has its own level data for the purposes of things like time, weather, etc.  If false, team dimensions just shadow the overworld's data for these purposes. This will only take effect when new worlds are created; not recommended to change this once any dimensions have been created!")
-                    .define("perDimensionLevelData", true);
 
             this.singleBiomeName = COMMON_BUILDER
                     .comment("If 'singleBiomeDimension' is true, this is the ID of the biome to generate")
