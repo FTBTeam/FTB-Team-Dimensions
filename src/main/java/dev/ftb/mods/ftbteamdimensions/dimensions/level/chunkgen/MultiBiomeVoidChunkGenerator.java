@@ -73,7 +73,7 @@ public class MultiBiomeVoidChunkGenerator extends NoiseBasedChunkGenerator imple
 
         MultiBiomeVoidChunkGenerator gen = new MultiBiomeVoidChunkGenerator(structureSetRegistry, noiseParams, biomeSource, settings, prebuiltStructureId);
 
-        if (!FTBDimensionsConfig.DIMENSIONS.allowVoidFeatureGen.get()) {
+        if (!FTBDimensionsConfig.COMMON_GENERAL.allowVoidFeatureGen.get()) {
             //noinspection ConstantConditions
             ((ChunkGeneratorMixin) gen).setFeaturesPerStep(List::of);
         }

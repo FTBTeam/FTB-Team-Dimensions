@@ -2,11 +2,13 @@ package dev.ftb.mods.ftbteamdimensions;
 
 import dev.ftb.mods.ftbteamdimensions.client.DimensionsClient;
 import dev.ftb.mods.ftbteamdimensions.commands.FTBDimensionsCommands;
+import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionUtils;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsMain;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
 import dev.ftb.mods.ftbteamdimensions.net.FTBDimensionsNet;
+import dev.ftb.mods.ftbteamdimensions.net.VoidTeamDimension;
 import dev.ftb.mods.ftbteamdimensions.registry.ModArgumentTypes;
 import dev.ftb.mods.ftbteamdimensions.registry.ModBlocks;
 import dev.ftb.mods.ftbteamdimensions.registry.ModWorldGen;
@@ -20,14 +22,13 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.level.SleepFinishedTimeEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -40,7 +41,7 @@ public class FTBTeamDimensions {
     public static final String MOD_ID = "ftbteamdimensions";
 
     public FTBTeamDimensions() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FTBDimensionsConfig.COMMON_CONFIG);
+        FTBDimensionsConfig.init();
 
         IEventBus MOD_BUS = FMLJavaModLoadingContext.get().getModEventBus();
 
@@ -58,6 +59,7 @@ public class FTBTeamDimensions {
         MinecraftForge.EVENT_BUS.addListener(this::commandsSetup);
         MinecraftForge.EVENT_BUS.addListener(this::reloadListener);
         MinecraftForge.EVENT_BUS.addListener(this::dimensionChanged);
+        MinecraftForge.EVENT_BUS.addListener(this::entityJoinLevel);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::onSleepFinished);
 
         FTBDimensionsNet.init();
@@ -93,6 +95,12 @@ public class FTBTeamDimensions {
                     player.server.executeIfPossible(() -> DynamicDimensionManager.teleport(player, dim));
                 }
             }
+        }
+    }
+
+    private void entityJoinLevel(EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof ServerPlayer sp && DimensionUtils.isVoidChunkGen(sp.getLevel().getChunkSource().getGenerator())) {
+            VoidTeamDimension.INSTANCE.sendTo(sp);
         }
     }
 

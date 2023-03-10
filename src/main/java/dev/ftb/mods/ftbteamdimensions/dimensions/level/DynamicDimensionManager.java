@@ -70,7 +70,7 @@ public class DynamicDimensionManager {
 		);
 
 		// TODO allow specification of other generation types
-		ChunkGenerator chunkGenerator = FTBDimensionsConfig.DIMENSIONS.singleBiomeDimension.get() ?
+		ChunkGenerator chunkGenerator = FTBDimensionsConfig.COMMON_GENERAL.singleBiomeDimension.get() ?
 				SimpleVoidChunkGenerator.simpleVoidChunkGen(registryAccess, prebuiltStructureId) :
 				MultiBiomeVoidChunkGenerator.multiBiomeVoidChunkGen(registryAccess, prebuiltStructureId);
 

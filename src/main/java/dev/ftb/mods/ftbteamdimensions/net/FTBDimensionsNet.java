@@ -12,6 +12,7 @@ public class FTBDimensionsNet {
     public static final MessageType CREATE_DIMENSION_FOR_TEAM = NET.registerC2S("create_dimension_for_team", CreateDimensionForTeam::new);
     public static final MessageType UPDATE_DIMENSION_LIST = NET.registerS2C("update_dimensions_list", UpdateDimensionsList::new);
     public static final MessageType SYNC_PREBUILT_STRUCTURES = NET.registerS2C("sync_prebuilt_structures", SyncPrebuiltStructures::new);
+    public static final MessageType VOID_TEAM_DIMENSION = NET.registerS2C("void_team_dimension", VoidTeamDimension::new);
 
     public static void init() {
 

@@ -2,18 +2,30 @@ package dev.ftb.mods.ftbteamdimensions;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
 
 public class FTBDimensionsConfig {
-    public static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec COMMON_CONFIG;
+    private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
+    private static final ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
 
-    public static final CategoryDimensions DIMENSIONS = new CategoryDimensions();
+    private static final ForgeConfigSpec COMMON_CONFIG;
+    private static final ForgeConfigSpec CLIENT_CONFIG;
+
+    public static final CategoryCommonGeneral COMMON_GENERAL = new CategoryCommonGeneral();
+    public static final CategoryClientGeneral CLIENT_GENERAL = new CategoryClientGeneral();
 
     static {
         COMMON_CONFIG = COMMON_BUILDER.build();
+        CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 
-    public static class CategoryDimensions {
+    static void init() {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, COMMON_CONFIG);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT_CONFIG);
+    }
+
+    public static class CategoryCommonGeneral {
         public final ForgeConfigSpec.BooleanValue clearPlayerInventory;
         public final ForgeConfigSpec.ConfigValue<String> lobbyStructure;
         public final ForgeConfigSpec.BooleanValue allowNetherPortals;
@@ -21,7 +33,7 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.BooleanValue allowVoidFeatureGen;
         public final ForgeConfigSpec.ConfigValue<String> singleBiomeName;
 
-        public CategoryDimensions() {
+        public CategoryCommonGeneral() {
             COMMON_BUILDER.push("general");
 
             this.clearPlayerInventory = COMMON_BUILDER
@@ -37,7 +49,7 @@ public class FTBDimensionsConfig {
                     .define("allowNetherPortals", true);
 
             this.allowVoidFeatureGen = COMMON_BUILDER
-                    .comment("When set to false, no features may generate in void dimensions. Some features (e.g. icebergs) will try to generate in applicable biomes without any checks for surrounding blocks.")
+                    .comment("When set to false, no features may generate in void dimensions. If this set to true, some features (e.g. icebergs) will generate in applicable biomes without any checks for surrounding blocks (like water). Changing this will *not* affect any already-generated chunks.")
                     .define("allowVoidFeatureGen", false);
 
             this.singleBiomeDimension = COMMON_BUILDER
@@ -53,6 +65,25 @@ public class FTBDimensionsConfig {
 
         public ResourceLocation lobbyLocation() {
             return new ResourceLocation(lobbyStructure.get());
+        }
+    }
+
+    public static class CategoryClientGeneral {
+        public final ForgeConfigSpec.DoubleValue voidBiomeHorizon;
+        public final ForgeConfigSpec.BooleanValue hideVoidFog;
+
+        public CategoryClientGeneral() {
+            CLIENT_BUILDER.push("general");
+
+            this.voidBiomeHorizon = CLIENT_BUILDER
+                    .comment("In void team dimensions, the Y level of the horizon; the lower sky turns black if the player's eye position is below this level")
+                    .defineInRange("voidBiomeHorizon", 0.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
+            this.hideVoidFog = CLIENT_BUILDER
+                    .comment("If true, suppress the void fog effect that appears at low Y levels while in void team dimensions")
+                    .define("hideVoidFog", true);
+
+            CLIENT_BUILDER.pop();
         }
     }
 }

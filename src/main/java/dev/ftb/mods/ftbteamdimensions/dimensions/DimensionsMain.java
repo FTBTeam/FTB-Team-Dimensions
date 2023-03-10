@@ -5,9 +5,9 @@ import dev.architectury.event.events.common.PlayerEvent;
 import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
+import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
 import dev.ftb.mods.ftbteamdimensions.net.SyncArchivedDimensions;
 import dev.ftb.mods.ftbteamdimensions.net.SyncPrebuiltStructures;
-import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
 import dev.ftb.mods.ftbteams.data.Team;
 import dev.ftb.mods.ftbteams.data.TeamType;
 import dev.ftb.mods.ftbteams.event.PlayerJoinedPartyTeamEvent;
@@ -110,7 +110,7 @@ public class DimensionsMain {
         }
 
         try {
-            ResourceLocation lobbyLocation = FTBDimensionsConfig.DIMENSIONS.lobbyLocation();
+            ResourceLocation lobbyLocation = FTBDimensionsConfig.COMMON_GENERAL.lobbyLocation();
 
             if (!serverLevel.dimension().location().equals(OVERWORLD)) {
                 BlockPos dimSpawn = dimensionStorage.getDimensionSpawnLocation(serverLevel.dimension().location());
@@ -146,7 +146,7 @@ public class DimensionsMain {
                 return;
             }
 
-            if (FTBDimensionsConfig.DIMENSIONS.clearPlayerInventory.get()) {
+            if (FTBDimensionsConfig.COMMON_GENERAL.clearPlayerInventory.get()) {
                 serverPlayer.getInventory().clearOrCountMatchingItems(arg -> true, -1, serverPlayer.inventoryMenu.getCraftSlots());
                 serverPlayer.containerMenu.broadcastChanges();
                 serverPlayer.inventoryMenu.slotsChanged(serverPlayer.getInventory());

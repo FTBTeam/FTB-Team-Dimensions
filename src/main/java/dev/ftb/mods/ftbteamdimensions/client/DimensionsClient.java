@@ -2,9 +2,9 @@ package dev.ftb.mods.ftbteamdimensions.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
+import dev.ftb.mods.ftbteamdimensions.client.gui.StartSelectScreen;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.ArchivedDimension;
 import dev.ftb.mods.ftbteamdimensions.net.CreateDimensionForTeam;
-import dev.ftb.mods.ftbteamdimensions.client.gui.StartSelectScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
@@ -22,10 +22,12 @@ import net.minecraftforge.client.event.RegisterClientCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import javax.annotation.Nonnull;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
@@ -103,5 +105,10 @@ public class DimensionsClient {
         public float[] getSunriseColor(float f, float g) {
             return null;
         }
+    }
+
+    @Nonnull
+    public static Level clientLevel() {
+        return Objects.requireNonNull(Minecraft.getInstance().level);
     }
 }

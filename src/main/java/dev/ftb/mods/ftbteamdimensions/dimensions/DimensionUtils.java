@@ -47,7 +47,7 @@ public class DimensionUtils {
     }
 
     public static boolean isPortalDimension(Level level) {
-        return FTBDimensionsConfig.DIMENSIONS.allowNetherPortals.get()
+        return FTBDimensionsConfig.COMMON_GENERAL.allowNetherPortals.get()
                 && level.dimension().location().getNamespace().equals(FTBTeamDimensions.MOD_ID);
     }
 
