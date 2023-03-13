@@ -16,7 +16,6 @@ public class BaseFireBlockMixin {
         // we also want to allow them to be created in our dynamic dimensions
         if (DimensionUtils.isPortalDimension(pLevel)) {
             cir.setReturnValue(true);
-            cir.cancel();
         }
     }
 }

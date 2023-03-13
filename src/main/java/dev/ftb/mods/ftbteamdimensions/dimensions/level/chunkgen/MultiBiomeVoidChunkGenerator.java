@@ -6,7 +6,7 @@ import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.PrebuiltStructureProvider;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructure;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
-import dev.ftb.mods.ftbteamdimensions.mixin.ChunkGeneratorMixin;
+import dev.ftb.mods.ftbteamdimensions.mixin.ChunkGeneratorAccess;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -75,7 +75,7 @@ public class MultiBiomeVoidChunkGenerator extends NoiseBasedChunkGenerator imple
 
         if (!FTBDimensionsConfig.COMMON_GENERAL.allowVoidFeatureGen.get()) {
             //noinspection ConstantConditions
-            ((ChunkGeneratorMixin) gen).setFeaturesPerStep(List::of);
+            ((ChunkGeneratorAccess) gen).setFeaturesPerStep(List::of);
         }
 
         return gen;

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @Mixin(ChunkGenerator.class)
-public interface ChunkGeneratorMixin {
+public interface ChunkGeneratorAccess {
     @Accessor("featuresPerStep")
     @Mutable
     void setFeaturesPerStep(Supplier<List<FeatureSorter.StepFeatureData>> featuresPerStep);

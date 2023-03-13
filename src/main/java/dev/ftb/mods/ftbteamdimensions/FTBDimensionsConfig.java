@@ -32,6 +32,7 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.BooleanValue singleBiomeDimension;
         public final ForgeConfigSpec.BooleanValue allowVoidFeatureGen;
         public final ForgeConfigSpec.ConfigValue<String> singleBiomeName;
+        public final ForgeConfigSpec.BooleanValue teamSpecificNetherEntryPoint;
 
         public CategoryCommonGeneral() {
             COMMON_BUILDER.push("general");
@@ -59,6 +60,10 @@ public class FTBDimensionsConfig {
             this.singleBiomeName = COMMON_BUILDER
                     .comment("If 'singleBiomeDimension' is true, this is the ID of the biome to generate")
                     .define("singleBiomeName", "minecraft:the_void");
+
+            this.teamSpecificNetherEntryPoint = COMMON_BUILDER
+                    .comment("If true, then players going to the Nether via Nether Portal will be sent to a team-specific position in the Nether")
+                    .define("teamSpecificNetherEntryPoint", true);
 
             COMMON_BUILDER.pop();
         }

@@ -55,4 +55,5 @@ public class DimensionUtils {
         return chunkGenerator instanceof SimpleVoidChunkGenerator
                 || chunkGenerator instanceof MultiBiomeVoidChunkGenerator;
     }
+
 }
