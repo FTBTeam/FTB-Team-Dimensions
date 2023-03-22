@@ -1,13 +1,13 @@
 package dev.ftb.mods.ftbteamdimensions.commands;
 
-import com.google.common.collect.ImmutableSet;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
-import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
 import dev.ftb.mods.ftbteamdimensions.commands.arguments.DimensionCommandArgument;
+import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
+import dev.ftb.mods.ftbteamdimensions.dimensions.NetherPortalPlacement;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.ArchivedDimension;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
@@ -20,13 +20,18 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.portal.PortalInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -48,6 +53,10 @@ public class FTBDimensionsCommands {
                 .then(Commands.literal("visit")
                         .requires(source -> source.hasPermission(2))
                         .then(Commands.argument("team", TeamArgument.create()).executes(context -> visitDim(context.getSource(), TeamArgument.get(context, "team"))))
+                )
+                .then(Commands.literal("nether-visit")
+                        .requires(source -> source.hasPermission(2))
+                        .then(Commands.argument("team", TeamArgument.create()).executes(context -> visitNetherDim(context.getSource(), TeamArgument.get(context, "team"))))
                 )
                 .then(Commands.literal("list-dimensions")
                         .requires(source -> source.hasPermission(2))
@@ -192,6 +201,31 @@ public class FTBDimensionsCommands {
         }
 
         DynamicDimensionManager.teleport(source.getPlayerOrException(), dimension);
+        return 0;
+    }
+
+    private static int visitNetherDim(CommandSourceStack source, Team team) throws CommandSyntaxException {
+        if (team.getType() != TeamType.PARTY) {
+            throw NOT_PARTY_TEAM.create(team.getName().getString());
+        }
+
+        ServerLevel nether = source.getServer().getLevel(Level.NETHER);
+        if (nether == null) {
+            throw DIM_MISSING.create(team.getName().getString());
+        }
+        ServerPlayer player = source.getPlayerOrException();
+        PortalInfo portalInfo = NetherPortalPlacement.teamSpecificEntryPoint(nether, player, team);
+
+        BlockPos pos = new BlockPos(portalInfo.pos.x(), portalInfo.pos.y(), portalInfo.pos.z());
+        ChunkPos chunkpos = new ChunkPos(pos);
+        nether.getChunkSource().addRegionTicket(TicketType.POST_TELEPORT, chunkpos, 1, player.getId());
+        player.stopRiding();
+        if (player.isSleeping()) {
+            player.stopSleepInBed(true, true);
+        }
+        player.teleportTo(nether, portalInfo.pos.x() + .5D, portalInfo.pos.y() + .01D, portalInfo.pos.z() + .5D, player.getYRot(), player.getXRot());
+        player.setPortalCooldown();
+
         return 0;
     }
 
