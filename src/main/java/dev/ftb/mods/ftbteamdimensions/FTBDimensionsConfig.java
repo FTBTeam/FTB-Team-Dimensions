@@ -33,6 +33,7 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.BooleanValue allowVoidFeatureGen;
         public final ForgeConfigSpec.ConfigValue<String> singleBiomeName;
         public final ForgeConfigSpec.BooleanValue teamSpecificNetherEntryPoint;
+        public final ForgeConfigSpec.BooleanValue placeEntitiesInStartStructure;
 
         public CategoryCommonGeneral() {
             COMMON_BUILDER.push("general");
@@ -64,6 +65,10 @@ public class FTBDimensionsConfig {
             this.teamSpecificNetherEntryPoint = COMMON_BUILDER
                     .comment("If true, then players going to the Nether via Nether Portal will be sent to a team-specific position in the Nether")
                     .define("teamSpecificNetherEntryPoint", true);
+
+            this.placeEntitiesInStartStructure = COMMON_BUILDER
+                    .comment("If true, then any entities saved in the starting structure NBT will be included when the structure is generated")
+                    .define("placeEntitiesInStartStructure", true);
 
             COMMON_BUILDER.pop();
         }

@@ -39,7 +39,7 @@ public class DimensionUtils {
     public static StructurePlaceSettings makePlacementSettings(StructureTemplate template) {
         Vec3i size = template.getSize();
         StructurePlaceSettings settings = new StructurePlaceSettings();
-        settings.setIgnoreEntities(true);
+        settings.setIgnoreEntities(!FTBDimensionsConfig.COMMON_GENERAL.placeEntitiesInStartStructure.get());
         settings.addProcessor(IGNORE_PROCESSOR);
         settings.setRotationPivot(new BlockPos(size.getX() / 2, size.getY() / 2, size.getZ() / 2));
         settings.setRotation(Rotation.NONE);
