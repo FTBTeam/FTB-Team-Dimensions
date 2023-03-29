@@ -7,12 +7,14 @@ import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.SimpleVoidChunkG
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.placement.OneChunkOnlyPlacement;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.structure.StartStructure;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.structure.StartStructurePiece;
+import dev.ftb.mods.ftbteamdimensions.dimensions.waterlogging.WaterLoggingFixProcessor;
 import net.minecraft.core.Registry;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
@@ -24,6 +26,8 @@ public class ModWorldGen {
             = DeferredRegister.create(Registry.STRUCTURE_PIECE_REGISTRY, FTBTeamDimensions.MOD_ID);
     public static final DeferredRegister<StructurePlacementType<?>> STRUCTURE_PLACEMENT_TYPES
             = DeferredRegister.create(Registry.STRUCTURE_PLACEMENT_TYPE_REGISTRY, FTBTeamDimensions.MOD_ID);
+    public static final DeferredRegister<StructureProcessorType<?>> STRUCTURE_PROCESSORS
+            = DeferredRegister.create(Registry.STRUCTURE_PROCESSOR_REGISTRY, FTBTeamDimensions.MOD_ID);
 
     public static final RegistryObject<StructureType<StartStructure>> START_STRUCTURE
             = STRUCTURE_TYPES.register("start", () -> explicitStructureTypeTyping(StartStructure.CODEC));
@@ -33,6 +37,9 @@ public class ModWorldGen {
 
     public static final RegistryObject<StructurePlacementType<OneChunkOnlyPlacement>> ZERO_ZERO_PLACEMENT
             = STRUCTURE_PLACEMENT_TYPES.register("one_chunk_only", () -> explicitStructurePlacementTypeTyping(OneChunkOnlyPlacement.CODEC));
+
+    public static final RegistryObject<StructureProcessorType<WaterLoggingFixProcessor>> WATER_LOGGING_FIX_PROCESSOR
+            = STRUCTURE_PROCESSORS.register("waterlogging_fix_processor", () -> () -> WaterLoggingFixProcessor.CODEC);
 
     private static <T extends Structure> StructureType<T> explicitStructureTypeTyping(Codec<T> codec) {
         return () -> codec;

@@ -5,6 +5,7 @@ import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.MultiBiomeVoidChunkGenerator;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.SimpleVoidChunkGenerator;
+import dev.ftb.mods.ftbteamdimensions.dimensions.waterlogging.WaterLoggingFixProcessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.Level;
@@ -41,6 +42,7 @@ public class DimensionUtils {
         StructurePlaceSettings settings = new StructurePlaceSettings();
         settings.setIgnoreEntities(!FTBDimensionsConfig.COMMON_GENERAL.placeEntitiesInStartStructure.get());
         settings.addProcessor(IGNORE_PROCESSOR);
+        settings.addProcessor(WaterLoggingFixProcessor.INSTANCE);
         settings.setRotationPivot(new BlockPos(size.getX() / 2, size.getY() / 2, size.getZ() / 2));
         settings.setRotation(Rotation.NONE);
         return settings;
