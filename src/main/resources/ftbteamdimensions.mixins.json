@@ -6,6 +6,9 @@
     "BaseFireBlockMixin",
     "ChunkGeneratorAccess",
     "EntityAccess",
+    "LevelAccess",
+    "PersistentEntitySectionManagerAccess",
+    "ServerLevelAccess",
     "ServerPlayerAccess",
     "ServerPlayerMixin"
   ],

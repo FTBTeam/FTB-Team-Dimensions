@@ -3,8 +3,10 @@ package dev.ftb.mods.ftbteamdimensions.client;
 import com.mojang.blaze3d.platform.NativeImage;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbteamdimensions.client.gui.StartSelectScreen;
+import dev.ftb.mods.ftbteamdimensions.client.gui.VisitScreen;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.ArchivedDimension;
 import dev.ftb.mods.ftbteamdimensions.net.CreateDimensionForTeam;
+import dev.ftb.mods.ftbteamdimensions.net.OpenVisitGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
@@ -25,10 +27,7 @@ import net.minecraftforge.fml.common.Mod;
 import javax.annotation.Nonnull;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Mod.EventBusSubscriber(Dist.CLIENT)
 public class DimensionsClient {
@@ -76,6 +75,9 @@ public class DimensionsClient {
         }));
     }
 
+    public static void openVisitScreen(Map<ResourceLocation, OpenVisitGui.DimData> dim2name) {
+        Minecraft.getInstance().setScreen(new VisitScreen(dim2name));
+    }
 
     public static int toggleDebug() {
         debugMode = !debugMode;

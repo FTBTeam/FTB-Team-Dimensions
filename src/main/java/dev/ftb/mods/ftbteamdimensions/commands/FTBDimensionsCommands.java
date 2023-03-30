@@ -11,6 +11,7 @@ import dev.ftb.mods.ftbteamdimensions.dimensions.NetherPortalPlacement;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.ArchivedDimension;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
+import dev.ftb.mods.ftbteamdimensions.net.OpenVisitGui;
 import dev.ftb.mods.ftbteams.FTBTeamsAPI;
 import dev.ftb.mods.ftbteams.data.PartyTeam;
 import dev.ftb.mods.ftbteams.data.Team;
@@ -33,10 +34,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.portal.PortalInfo;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class FTBDimensionsCommands {
     private static final DynamicCommandExceptionType NOT_PARTY_TEAM = new DynamicCommandExceptionType(
@@ -52,6 +50,7 @@ public class FTBDimensionsCommands {
         LiteralCommandNode<CommandSourceStack> commands = commandDispatcher.register(Commands.literal(FTBTeamDimensions.MOD_ID)
                 .then(Commands.literal("visit")
                         .requires(source -> source.hasPermission(2))
+                        .executes(context -> openVisitGui(context.getSource()))
                         .then(Commands.argument("team", TeamArgument.create()).executes(context -> visitDim(context.getSource(), TeamArgument.get(context, "team"))))
                 )
                 .then(Commands.literal("nether-visit")
@@ -89,6 +88,43 @@ public class FTBDimensionsCommands {
         );
 
         commandDispatcher.register(Commands.literal("ftbdim").redirect(commands));
+    }
+
+    private static int openVisitGui(CommandSourceStack source) throws CommandSyntaxException {
+        DimensionStorage storage = DimensionStorage.get(source.getServer());
+        Map<UUID, ResourceLocation> team2dim = storage.getTeamToDimension();
+
+        // live dimensions
+        Map<ResourceLocation, OpenVisitGui.DimData> dim2name = new HashMap<>();
+        team2dim.keySet().forEach(dimId -> {
+            Team team = FTBTeamsAPI.getManager().getTeamByID(dimId);
+            if (team != null) {
+                ResourceKey<Level> key = storage.getDimensionId(team);
+                if (key != null) {
+                    ServerLevel level = source.getServer().getLevel(key);
+                    if (level != null) {
+                        dim2name.put(key.location(), OpenVisitGui.DimData.create(level, team.getName().getString(), false));
+                    }
+                }
+            }
+        });
+
+        // archived dimensions
+        storage.getArchivedDimensions().forEach(dim -> {
+            ResourceKey<Level> key = ResourceKey.create(Registry.DIMENSION_REGISTRY, dim.dimensionName());
+            ServerLevel level = source.getServer().getLevel(key);
+            if (level != null) {
+                dim2name.put(dim.dimensionName(), OpenVisitGui.DimData.create(level, dim.teamName(), true));
+            }
+        });
+
+        if (dim2name.isEmpty()) {
+            source.sendFailure(Component.translatable("ftbteamdimensions.message.no_dimensions"));
+            return -1;
+        }
+
+        new OpenVisitGui(dim2name).sendTo(source.getPlayerOrException());
+        return 1;
     }
 
     public static PartyTeam createPartyTeam(ServerPlayer player) throws CommandSyntaxException {
@@ -183,7 +219,7 @@ public class FTBDimensionsCommands {
         source.sendSuccess(Component.translatable("ftbteamdimensions.message.dim_header", archivedDimensions.size()).withStyle(ChatFormatting.DARK_GREEN), false);
         for (ArchivedDimension aDim : archivedDimensions) {
             source.sendSuccess(Component.literal(aDim.dimensionName().toString()).withStyle(ChatFormatting.GOLD)
-                    .append(Component.literal(": [team=%s] [owner=%s]".formatted(aDim.teamName(), aDim.teamOwner())).withStyle(ChatFormatting.GRAY)),
+                            .append(Component.literal(": [team=%s] [owner=%s]".formatted(aDim.teamName(), aDim.teamOwner())).withStyle(ChatFormatting.GRAY)),
                     false);
         }
 
@@ -249,4 +285,5 @@ public class FTBDimensionsCommands {
         source.sendFailure(Component.translatable("ftbteamdimensions.message.cant_teleport"));
         return 0;
     }
+
 }
