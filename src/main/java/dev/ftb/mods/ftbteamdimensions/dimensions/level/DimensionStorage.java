@@ -16,8 +16,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraftforge.server.ServerLifecycleHooks;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import javax.annotation.Nullable;
@@ -31,6 +29,7 @@ public class DimensionStorage extends SavedData {
     private final HashMap<UUID, ResourceLocation> teamToDimension = new HashMap<>();
     private final HashMap<ResourceLocation, BlockPos> dimensionSpawnLocations = new HashMap<>();
     private final List<ArchivedDimension> archivedDimensions = new ArrayList<>();
+    private final HashMap<UUID,BlockPos> playerNetherPortalLocs = new HashMap<>();
 
     private boolean lobbySpawned = false;
     private BlockPos lobbySpawnPos = BlockPos.ZERO;
@@ -129,6 +128,29 @@ public class DimensionStorage extends SavedData {
         this.setDirty();
     }
 
+    /**
+     * Note the location of the nether portal where the player last left their team dimension to go to the Nether.
+     * This will be used when player returns to their team dimension from the Nether; we need to do this since normal
+     * vanilla portal location logic (x/8, z/8) doesn't work because we do custom nether portal locations for teams.
+     *
+     * @param player the player about to go to the nether
+     * @param blockPosition the position they leave their team dimension from, which should normally be a nether portal
+     */
+    public void setPlayerNetherPortalLoc(ServerPlayer player, BlockPos blockPosition) {
+        if (blockPosition == null) {
+            if (playerNetherPortalLocs.remove(player.getUUID()) != null) {
+                setDirty();
+            }
+        } else {
+            playerNetherPortalLocs.put(player.getUUID(), blockPosition);
+            setDirty();
+        }
+    }
+
+    public Optional<BlockPos> getPlayerNetherPortalLoc(ServerPlayer player) {
+        return Optional.ofNullable(playerNetherPortalLocs.get(player.getUUID()));
+    }
+
     private static DimensionStorage load(CompoundTag compoundTag) {
         var storage = new DimensionStorage();
         storage.read(compoundTag);
@@ -140,8 +162,12 @@ public class DimensionStorage extends SavedData {
             return;
         }
 
-        this.teamToDimension.putAll(hashMapReader(UUID::fromString, (tag1, key) -> new ResourceLocation(tag1.getString(key)), tag.getCompound("team_dimensions")));
-        this.dimensionSpawnLocations.putAll(hashMapReader(ResourceLocation::new, (tag1, key) -> BlockPos.of(tag1.getLong(key)), tag.getCompound("dimension_spawns")));
+        teamToDimension.putAll(hashMapReader(UUID::fromString,
+                (tag1, key) -> new ResourceLocation(tag1.getString(key)), tag.getCompound("team_dimensions")));
+        dimensionSpawnLocations.putAll(hashMapReader(ResourceLocation::new,
+                (tag1, key) -> BlockPos.of(tag1.getLong(key)), tag.getCompound("dimension_spawns")));
+        playerNetherPortalLocs.putAll(hashMapReader(UUID::fromString,
+                (tag1, key) -> BlockPos.of(tag1.getLong(key)), tag.getCompound("player_nether_portal_locs")));
 
         ListTag dimensionsArchive = tag.getList("dimensions_archive", CompoundTag.TAG_COMPOUND);
         for (int i = 0; i < dimensionsArchive.size(); i++) {
@@ -152,21 +178,27 @@ public class DimensionStorage extends SavedData {
         if (tag.contains("lobby_spawn_pos")) {
             this.lobbySpawnPos = NbtUtils.readBlockPos(tag.getCompound("lobby_spawn_pos"));
         }
+
     }
 
     @Override
-    public CompoundTag save(CompoundTag arg) {
-        arg.put("team_dimensions", hashMapWriter(teamToDimension, (tag, key, value) -> tag.putString(key.toString(), value.toString())));
-        arg.put("dimension_spawns", hashMapWriter(dimensionSpawnLocations, (tag, key, value) -> tag.putLong(key.toString(), value.asLong())));
+    public CompoundTag save(CompoundTag nbt) {
+        nbt.put("team_dimensions", hashMapWriter(teamToDimension,
+                (tag, key, value) -> tag.putString(key.toString(), value.toString())));
+        nbt.put("dimension_spawns", hashMapWriter(dimensionSpawnLocations,
+                (tag, key, value) -> tag.putLong(key.toString(), value.asLong())));
+        nbt.put("player_nether_portal_locs", hashMapWriter(playerNetherPortalLocs,
+                (tag, key, value) -> tag.putLong(key.toString(), value.asLong())));
 
         ListTag archivedList = new ListTag();
         this.archivedDimensions.forEach(e -> archivedList.add(e.write()));
-        arg.put("dimensions_archive", archivedList);
+        nbt.put("dimensions_archive", archivedList);
 
-        arg.putBoolean("lobby_spawned", lobbySpawned);
-        arg.put("lobby_spawn_pos", NbtUtils.writeBlockPos(lobbySpawnPos));
+        nbt.putBoolean("lobby_spawned", lobbySpawned);
+        nbt.put("lobby_spawn_pos", NbtUtils.writeBlockPos(lobbySpawnPos));
+
         this.setDirty(false);
-        return arg;
+        return nbt;
     }
 
     private <K, V> HashMap<K, V> hashMapReader(Function<String, K> keyReader, BiFunction<CompoundTag, String, V> valueReader, CompoundTag tag) {

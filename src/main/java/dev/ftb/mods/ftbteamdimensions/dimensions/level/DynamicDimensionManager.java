@@ -2,7 +2,6 @@ package dev.ftb.mods.ftbteamdimensions.dimensions.level;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.mojang.math.Vector3d;
 import com.mojang.serialization.Lifecycle;
 import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
@@ -31,6 +30,7 @@ import net.minecraft.world.level.levelgen.WorldGenSettings;
 import net.minecraft.world.level.storage.DerivedLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.level.storage.WorldData;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.LevelEvent;
 import org.apache.commons.io.FileUtils;
@@ -170,24 +170,34 @@ public class DynamicDimensionManager {
 	}
 
 	public static boolean teleport(ServerPlayer player, ResourceKey<Level> key) {
+		return teleport(player, key, null);
+	}
+
+	public static boolean teleport(ServerPlayer player, ResourceKey<Level> key, BlockPos destPos) {
 		ServerLevel level = player.server.getLevel(key);
 
 		if (level != null) {
 			if (key.equals(Level.OVERWORLD)) {
 				BlockPos lobbySpawnPos = DimensionStorage.get(player.server).getLobbySpawnPos();
-				player.teleportTo(level, lobbySpawnPos.getX() + .5D, lobbySpawnPos.getY() + .01D, lobbySpawnPos.getZ() + .5D, player.getYRot(), player.getXRot());
+				BlockPos pos = Objects.requireNonNullElse(destPos, lobbySpawnPos);
+				player.teleportTo(level, pos.getX() + .5D, pos.getY() + .01D, pos.getZ() + .5D, player.getYRot(), player.getXRot());
 			} else {
-				Vector3d vec = new Vector3d(0.5D, 1.1D, 0.5D);
-				BlockPos respawnPosition = player.getRespawnPosition();
-				if (player.getRespawnDimension().equals(key) && respawnPosition != null) {
-					vec.add(new Vector3d(respawnPosition.getX(), respawnPosition.getY(), respawnPosition.getZ()));
-				} else {
-					BlockPos levelSharedSpawn = DimensionStorage.get(player.server).getDimensionSpawnLocation(level.dimension().location());
-					if (levelSharedSpawn == null) {
-						levelSharedSpawn = BlockPos.ZERO;
-					}
+				Vec3 vec;
+				if (destPos == null) {
+					vec = new Vec3(0.5D, 1.1D, 0.5D);
+					BlockPos respawnPosition = player.getRespawnPosition();
+					if (player.getRespawnDimension().equals(key) && respawnPosition != null) {
+						vec = vec.add(new Vec3(respawnPosition.getX(), respawnPosition.getY(), respawnPosition.getZ()));
+					} else {
+						BlockPos levelSharedSpawn = DimensionStorage.get(player.server).getDimensionSpawnLocation(level.dimension().location());
+						if (levelSharedSpawn == null) {
+							levelSharedSpawn = BlockPos.ZERO;
+						}
 
-					vec.add(new Vector3d(levelSharedSpawn.getX(), levelSharedSpawn.getY(), levelSharedSpawn.getZ()));
+						vec = vec.add(new Vec3(levelSharedSpawn.getX(), levelSharedSpawn.getY(), levelSharedSpawn.getZ()));
+					}
+				} else {
+					vec = Vec3.atCenterOf(destPos);
 				}
 
 				FTBTeamDimensions.LOGGER.debug("teleport {} to {} in {}", player.getGameProfile().getName(), vec, key.location());

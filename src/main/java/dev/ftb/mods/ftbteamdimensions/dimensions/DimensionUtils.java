@@ -48,9 +48,12 @@ public class DimensionUtils {
         return settings;
     }
 
+    public static boolean isTeamDimension(Level level) {
+        return level.dimension().location().getNamespace().equals(FTBTeamDimensions.MOD_ID);
+    }
+
     public static boolean isPortalDimension(Level level) {
-        return FTBDimensionsConfig.COMMON_GENERAL.allowNetherPortals.get()
-                && level.dimension().location().getNamespace().equals(FTBTeamDimensions.MOD_ID);
+        return FTBDimensionsConfig.COMMON_GENERAL.allowNetherPortals.get() && isTeamDimension(level);
     }
 
     public static boolean isVoidChunkGen(ChunkGenerator chunkGenerator) {
