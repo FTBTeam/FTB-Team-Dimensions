@@ -15,7 +15,7 @@ import java.util.Optional;
 import static dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions.rl;
 
 public record PrebuiltStructure(ResourceLocation id, ResourceLocation structureLocation, String name, String author, Optional<BlockPos> spawnOverride,
-                                ResourceLocation structureSetId, int height, ResourceLocation dimensionType, ResourceLocation previewImage)
+                                ResourceLocation structureSetId, int height, ResourceLocation dimensionType, ResourceLocation previewImage, int displayOrder)
 {
     public static final ResourceLocation DEFAULT_PREVIEW = rl("default");
     public static final ResourceLocation FALLBACK_IMAGE = rl("textures/fallback.png");
@@ -40,7 +40,9 @@ public record PrebuiltStructure(ResourceLocation id, ResourceLocation structureL
             ResourceLocation.CODEC.optionalFieldOf("dimension_type", DEFAULT_DIMENSION_TYPE)
                     .forGetter(PrebuiltStructure::dimensionType),
             ResourceLocation.CODEC.optionalFieldOf("preview_image", DEFAULT_PREVIEW)
-                    .forGetter(PrebuiltStructure::previewImage)
+                    .forGetter(PrebuiltStructure::previewImage),
+            Codec.INT.optionalFieldOf("display_order", 0)
+                    .forGetter(PrebuiltStructure::displayOrder)
     ).apply(instance, PrebuiltStructure::new));
 
     public static Optional<PrebuiltStructure> fromJson(JsonElement element) {
@@ -59,8 +61,9 @@ public record PrebuiltStructure(ResourceLocation id, ResourceLocation structureL
         ResourceLocation structureSetId = buf.readResourceLocation();
         ResourceLocation dimensionType = buf.readResourceLocation();
         ResourceLocation previewImage = buf.readResourceLocation();
+        int displayOrder = buf.readVarInt();
 
-        return new PrebuiltStructure(id, structureLocation, name, author, spawnOverride, structureSetId, height, dimensionType, previewImage);
+        return new PrebuiltStructure(id, structureLocation, name, author, spawnOverride, structureSetId, height, dimensionType, previewImage, displayOrder);
     }
 
     public ResourceLocation previewImage() {
@@ -80,5 +83,10 @@ public record PrebuiltStructure(ResourceLocation id, ResourceLocation structureL
         buf.writeResourceLocation(structureSetId);
         buf.writeResourceLocation(dimensionType);
         buf.writeResourceLocation(previewImage);
+        buf.writeVarInt(displayOrder);
+    }
+
+    public boolean matchesName(String match) {
+        return match.isEmpty() || name.toLowerCase().contains(match.toLowerCase());
     }
 }
