@@ -34,6 +34,7 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.ConfigValue<String> singleBiomeName;
         public final ForgeConfigSpec.BooleanValue teamSpecificNetherEntryPoint;
         public final ForgeConfigSpec.BooleanValue placeEntitiesInStartStructure;
+        public final ForgeConfigSpec.IntValue replaceColdBiomesNearSpawn;
 
         public CategoryCommonGeneral() {
             COMMON_BUILDER.push("general");
@@ -69,6 +70,10 @@ public class FTBDimensionsConfig {
             this.placeEntitiesInStartStructure = COMMON_BUILDER
                     .comment("If true, then any entities saved in the starting structure NBT will be included when the structure is generated")
                     .define("placeEntitiesInStartStructure", true);
+
+            this.replaceColdBiomesNearSpawn = COMMON_BUILDER
+                    .comment("If > 0, any chunk closer than this to spawn with a cold biome (i.e. water can freeze) in its X/Z midpoint will have its biome replaced with 'minecraft:plains'. Set to 0 to disable all replacement.")
+                    .defineInRange("replaceColdBiomesNearSpawn", 64, 0, Integer.MAX_VALUE);
 
             COMMON_BUILDER.pop();
         }

@@ -2,6 +2,7 @@ package dev.ftb.mods.ftbteamdimensions;
 
 import dev.ftb.mods.ftbteamdimensions.client.DimensionsClient;
 import dev.ftb.mods.ftbteamdimensions.commands.FTBDimensionsCommands;
+import dev.ftb.mods.ftbteamdimensions.dimensions.BiomeReplacementUtils;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionUtils;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsMain;
 import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
@@ -14,11 +15,16 @@ import dev.ftb.mods.ftbteamdimensions.registry.ModArgumentTypes;
 import dev.ftb.mods.ftbteamdimensions.registry.ModBlocks;
 import dev.ftb.mods.ftbteamdimensions.registry.ModWorldGen;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,6 +32,7 @@ import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.event.level.SleepFinishedTimeEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -62,6 +69,7 @@ public class FTBTeamDimensions {
         MinecraftForge.EVENT_BUS.addListener(this::reloadListener);
         MinecraftForge.EVENT_BUS.addListener(this::dimensionChanged);
         MinecraftForge.EVENT_BUS.addListener(this::entityJoinLevel);
+        MinecraftForge.EVENT_BUS.addListener(this::onChunkLoad);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::onSleepFinished);
 
         FTBDimensionsNet.init();
@@ -113,8 +121,32 @@ public class FTBTeamDimensions {
     }
 
     private void entityJoinLevel(EntityJoinLevelEvent event) {
-        if (event.getEntity() instanceof ServerPlayer sp && DimensionUtils.isVoidChunkGen(sp.getLevel().getChunkSource().getGenerator())) {
-            VoidTeamDimension.INSTANCE.sendTo(sp);
+        if (event.getEntity() instanceof ServerPlayer sp) {
+            ServerLevel level = sp.getLevel();
+            if (DimensionUtils.isVoidChunkGen(level.getChunkSource().getGenerator())) {
+                VoidTeamDimension.INSTANCE.sendTo(sp);
+            }
+
+        }
+    }
+
+    private void onChunkLoad(ChunkEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel level && DimensionUtils.isTeamDimension(level) && FTBDimensionsConfig.COMMON_GENERAL.replaceColdBiomesNearSpawn.get() > 0) {
+            BlockPos spawnPos = DimensionStorage.get(level.getServer()).getDimensionSpawnLocation(level.dimension().location());
+            if (spawnPos != null) {
+                ChunkPos chunkPos = event.getChunk().getPos();
+                BlockPos pos1 = chunkPos.getMiddleBlockPosition(spawnPos.getY());
+                int threshold = (int) Math.pow(FTBDimensionsConfig.COMMON_GENERAL.replaceColdBiomesNearSpawn.get(), 2);
+                if (pos1.distSqr(spawnPos) < threshold && level.getBiome(pos1).value().coldEnoughToSnow(pos1)) {
+                    Holder<Biome> plains = level.registryAccess().registry(Registry.BIOME_REGISTRY).orElseThrow()
+                            .getHolderOrThrow(Biomes.PLAINS);
+                    BlockPos from = new BlockPos(chunkPos.getMinBlockX(), level.getMinBuildHeight(), chunkPos.getMinBlockZ());
+                    BlockPos to = new BlockPos(chunkPos.getMaxBlockX(), level.getMaxBuildHeight(), chunkPos.getMaxBlockZ());
+                    level.getServer().executeIfPossible(() ->
+                            BiomeReplacementUtils.replaceBiome(level, event.getChunk(), from , to, plains)
+                    );
+                }
+            }
         }
     }
 
