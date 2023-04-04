@@ -11,7 +11,7 @@ jobs:
     uses: FTBTeam/mods-meta/.github/workflows/standard-release.yml@main
     with:
       curse-publish-task: ""
-      maven-private: true
+      maven-private: false
       maven-snapshots: true
     secrets:
       ftb-maven-token: ${{ secrets.FTB_MAVEN_TOKEN }}
