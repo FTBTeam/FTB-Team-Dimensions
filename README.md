@@ -2,15 +2,20 @@
 
 ## Overview
 
+This is a companion mod for FTB modpacks which add team-based dimensions, and not intended for general usage in
+most packs.
+
 FTB Team Dimensions allows dimensions to be dynamically created for teams (FTB Teams is a required dependency).
 Players join the overworld in a prebuilt lobby structure with a portal, and on entering the portal get the option
 to choose from one or more "island" structures in a new dimension which will be created for their team. The party team
-will also be auto-created if it does not exist yet. New players can join the team in the usual way, and will be
-immediately ported to the team's existing dimension upon joining.
+will be auto-created if it does not exist yet. New players can be invited the team in the usual way, and will be
+immediately ported to the team's existing dimension upon joining. If a team is disbanded, the dimension is archived,
+and any players in the dimension are transferred back to the overworld lobby.
 
 Currently, there are two chunk generation types, both for simple void dimensions:
 
 * Multi-biome generation with an overworld-like biome distribution; this is the default
+  * See also the `replaceColdBiomesNearSpawn` settings, which can be used to replace the biome of chunks near spawn if the biome is a cold one; cold biomes mess with exposed water blocks and cover everything with snow.
 * Single biome generation; set `singleBiomeDimension` in mod config to true to enforce a single biome for the entire dimension.
   * You can override the biome that is used via the `singleBiomeName` config setting (default is `minecraft:the_void`)
 
@@ -18,14 +23,14 @@ More flexibility is planned in terms of types of world-gen in the future.
 
 ## Configuration
 
-At least basic familiarity with 1.19.2 data-driven world generation is required here.
+Some basic familiarity with 1.19.2 data-driven world generation is required here.
 
 Nearly all configuration is done via datapack, in particular the vanilla `structure` and `structure_set` to define the
 prebuilt "islands" which will be pre-generated in the new dimension (always at the (0,0) chunk).  There is also a custom
 `ftbdim_prebuilt_structures` datapack type, which defines which structures are available to the player (when the player
-first enters the lobby portal, one entry per known `ftbdim_prebuilt_structures` will be shown in the GUI).
+first enters the lobby portal, one entry per `ftbdim_prebuilt_structures` entry will be shown in the GUI).
 
-The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structures/island1.json`) looks something like (with optional
+The default prebuilt structure (`data/ftbteamdimensions/ftbdim_prebuilt_structures/island1.json`) looks something like this (with optional
 fields not necessarily included in the actual file):
 
 ```json5
@@ -33,13 +38,14 @@ fields not necessarily included in the actual file):
   "id": "ftbteamdimensions:island1",
   "structure": "ftbteamdimensions:spawn/island1",
   "name": "Simple Island",
-  // optional fields below here
+  // optional fields below here, with their defaults
   "author": "FTB Team",
   "structure_set": "ftbteamdimensions:default",
   "height": 64,
   "dimension_type": "ftbteamdimensions:default",
   "preview_image": "ftbteamdimensions:textures/spawn/island1.png",
-  "spawn_override": [ 0, 64, 0 ]
+  "spawn_override": [ 0, 64, 0 ],
+  "display_order": 0
 }
 ```
 
@@ -62,6 +68,8 @@ fields not necessarily included in the actual file):
   * Default texture for `<modname>:<id>` is `<modname>:textures/spawn/<id>.png`
 * "spawn_override" is optional, and can be used to spawn the player at a non-default position
   * Default position is (0, HEIGHT, 0), where HEIGHT is the island Y-level (see "height" above)
+* "display_order" is optional, a simple numeric value which affects the order in which islands are shown in the GUI when players enter the portal
+  * Islands of the same display order are sorted alphabetically by the display name
 
 ## Structure NBT
 
