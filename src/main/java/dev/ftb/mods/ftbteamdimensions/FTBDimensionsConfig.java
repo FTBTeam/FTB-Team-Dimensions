@@ -28,6 +28,7 @@ public class FTBDimensionsConfig {
     public static class CategoryCommonGeneral {
         public final ForgeConfigSpec.BooleanValue clearPlayerInventory;
         public final ForgeConfigSpec.ConfigValue<String> lobbyStructure;
+        public final ForgeConfigSpec.IntValue lobbyYposition;
         public final ForgeConfigSpec.BooleanValue allowNetherPortals;
         public final ForgeConfigSpec.BooleanValue singleBiomeDimension;
         public final ForgeConfigSpec.BooleanValue allowVoidFeatureGen;
@@ -46,6 +47,10 @@ public class FTBDimensionsConfig {
             this.lobbyStructure = COMMON_BUILDER
                     .comment("Resource location of the structure NBT for the lobby")
                     .define("lobbyStructure", FTBTeamDimensions.MOD_ID + ":lobby");
+
+            this.lobbyYposition = COMMON_BUILDER
+                    .comment("Y position at which the lobby structure will be pasted into the overworld. Note: too near world min/max build height may result in parts of the structure being cut off, beware.")
+                    .defineInRange("lobbyYposition", 0, -64, 256);
 
             this.allowNetherPortals = COMMON_BUILDER
                     .comment("When set to true, nether portals may be constructed in team dimensions")

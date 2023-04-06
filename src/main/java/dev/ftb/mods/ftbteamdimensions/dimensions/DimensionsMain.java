@@ -123,7 +123,7 @@ public class DimensionsMain {
             StructureTemplate lobby = serverLevel.getStructureManager().getOrCreate(lobbyLocation);
             StructurePlaceSettings placeSettings = DimensionUtils.makePlacementSettings(lobby);
             BlockPos spawnPos = locateSpawn(lobby);
-            BlockPos lobbyLoc = BlockPos.ZERO.offset(-(lobby.getSize().getX() / 2), 0, -(lobby.getSize().getZ() / 2));
+            BlockPos lobbyLoc = BlockPos.ZERO.offset(-(lobby.getSize().getX() / 2), FTBDimensionsConfig.COMMON_GENERAL.lobbyYposition.get(), -(lobby.getSize().getZ() / 2));
             BlockPos playerSpawn = spawnPos.offset(lobbyLoc.getX(), lobbyLoc.getY(), lobbyLoc.getZ());
 
             lobby.placeInWorld(serverLevel, lobbyLoc, lobbyLoc, placeSettings, serverLevel.random, Block.UPDATE_ALL);
