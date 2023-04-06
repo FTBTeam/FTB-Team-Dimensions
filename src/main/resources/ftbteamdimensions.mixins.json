@@ -13,7 +13,9 @@
     "ServerPlayerMixin"
   ],
   "client": [
-    "client.ClientLevelDataMixin"
+    "client.ClientLevelDataMixin",
+    "client.CreateWorldScreenAccess",
+    "client.WorldGenSettingsComponentAccess"
   ],
   "injectors": {
     "defaultRequire": 1

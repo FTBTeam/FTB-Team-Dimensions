@@ -15,6 +15,7 @@
   "screens.ftbteamdimensions.block_entities": "Ticking Block Entities: %s",
   "screens.ftbteamdimensions.entities": "Entities: %s",
   "screens.ftbteamdimensions.loaded_chunks": "Loaded Chunks: %s",
+  "screens.ftbteamdimensions.world_type_locked": "World Type: Locked",
   "ftbteamdimensions.message.not_a_party": "Team %s is not a party team!",
   "ftbteamdimensions.message.no_dim_for_team": "No team dimension found for team %s!",
   "ftbteamdimensions.message.missing_dimension": "Can't find dimension %s!",
