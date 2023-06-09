@@ -64,6 +64,7 @@ public class FTBTeamDimensions {
         ModWorldGen.STRUCTURE_TYPES.register(MOD_BUS);
         ModWorldGen.STRUCTURE_PIECE_TYPES.register(MOD_BUS);
         ModWorldGen.STRUCTURE_PLACEMENT_TYPES.register(MOD_BUS);
+        ModWorldGen.STRUCTURE_PROCESSORS.register(MOD_BUS);
 
         MinecraftForge.EVENT_BUS.addListener(this::commandsSetup);
         MinecraftForge.EVENT_BUS.addListener(this::reloadListener);
