@@ -9,7 +9,7 @@ def ENV = System.getenv()
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
-version = "${project.mod_version}-build.${ENV.GITHUB_RUN_NUMBER ?: 9999}"
+version = project.mod_version
 group = project.maven_group
 archivesBaseName = project.archives_base_name
 
