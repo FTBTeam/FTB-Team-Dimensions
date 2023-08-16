@@ -1,17 +1,11 @@
 package dev.ftb.mods.ftbteamdimensions;
 
-import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.CustomChunkGenerator;
-import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.MultiBiomeVoidChunkGenerator;
-import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.SimpleVoidChunkGenerator;
-import net.minecraft.core.RegistryAccess;
+import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.ChunkGenerators;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-
-import java.util.function.BiFunction;
 
 public class FTBDimensionsConfig {
     private static final ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
@@ -153,19 +147,4 @@ public class FTBDimensionsConfig {
         }
     }
 
-    public enum ChunkGenerators {
-        SIMPLE_VOID(SimpleVoidChunkGenerator::simpleVoidChunkGen),
-        MULTI_BIOME_VOID(MultiBiomeVoidChunkGenerator::multiBiomeVoidChunkGen),
-        CUSTOM(CustomChunkGenerator::customChunkgen);
-
-        private final BiFunction<RegistryAccess, ResourceLocation, ChunkGenerator> factory;
-
-        ChunkGenerators(BiFunction<RegistryAccess,ResourceLocation,ChunkGenerator> factory) {
-            this.factory = factory;
-        }
-
-        public ChunkGenerator makeGenerator(RegistryAccess registryAccess, ResourceLocation prebuiltStructureId) {
-            return factory.apply(registryAccess, prebuiltStructureId);
-        }
-    }
 }
