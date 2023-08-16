@@ -74,8 +74,9 @@ dependencies {
 
     modImplementation("dev.ftb.mods:ftb-teams-forge:${teams_version}")
     modLocalRuntime("com.sunekaer.mods:structure-expansion:${structure_expansion_version}")
-    modLocalRuntime("curse.maven:crashutilities-371813:4406293")
 }
+
+apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/extra-local-mods.gradle"
 
 processResources {
     inputs.property "version", project.version
