@@ -30,7 +30,7 @@ public class WaterLoggingFixProcessor extends StructureProcessor {
         // Is the block meant to be a fluid? No then lets make sure the world doesn't already have a fluid there
         if (after.state.getFluidState().isEmpty()) {
             // Is the block water? No, is the current block in the world water? Yes, Cool, remove it before placement
-            if (after.state.getBlock() != Blocks.WATER && levelReader.getBlockState(after.pos).getFluidState().is(Fluids.WATER)) {
+            if (after.state.getBlock() != Blocks.WATER && levelReader.hasChunkAt(after.pos) && levelReader.getBlockState(after.pos).getFluidState().is(Fluids.WATER)) {
                 worldGenRegion.setBlock(after.pos, after.state, Block.UPDATE_ALL);
             }
         }
