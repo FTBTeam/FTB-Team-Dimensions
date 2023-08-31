@@ -8,6 +8,7 @@ import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.SimpleVoidChunkG
 import dev.ftb.mods.ftbteamdimensions.dimensions.waterlogging.WaterLoggingFixProcessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
@@ -61,4 +62,9 @@ public class DimensionUtils {
                 || chunkGenerator instanceof MultiBiomeVoidChunkGenerator;
     }
 
+    public static void clearPlayerInventory(ServerPlayer serverPlayer) {
+        serverPlayer.getInventory().clearOrCountMatchingItems(arg -> true, -1, serverPlayer.inventoryMenu.getCraftSlots());
+        serverPlayer.containerMenu.broadcastChanges();
+        serverPlayer.inventoryMenu.slotsChanged(serverPlayer.getInventory());
+    }
 }

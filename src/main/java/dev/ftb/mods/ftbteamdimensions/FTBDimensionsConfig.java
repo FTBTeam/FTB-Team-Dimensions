@@ -28,7 +28,8 @@ public class FTBDimensionsConfig {
     }
 
     public static class CategoryCommonGeneral {
-        public final ForgeConfigSpec.BooleanValue clearPlayerInventory;
+        public final ForgeConfigSpec.BooleanValue clearPlayerInventoryOnLeave;
+        public final ForgeConfigSpec.BooleanValue clearPlayerInventoryOnJoin;
         public final ForgeConfigSpec.ConfigValue<String> lobbyStructure;
         public final ForgeConfigSpec.IntValue lobbyYposition;
         public final ForgeConfigSpec.BooleanValue allowNetherPortals;
@@ -46,7 +47,11 @@ public class FTBDimensionsConfig {
         public CategoryCommonGeneral() {
             COMMON_BUILDER.push("general");
 
-            this.clearPlayerInventory = COMMON_BUILDER
+            this.clearPlayerInventoryOnJoin = COMMON_BUILDER
+                    .comment("When set to true, the player's inventory will be cleared when joining a team")
+                    .define("clearPlayerInventoryOnJoin", false);
+
+            this.clearPlayerInventoryOnLeave = COMMON_BUILDER
                     .comment("When set to true, the players inventory will be cleared when leaving a team")
                     .define("clearPlayerInventory", true);
 
