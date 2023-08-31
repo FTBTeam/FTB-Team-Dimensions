@@ -60,7 +60,8 @@ public class DimensionsMain {
 
     private static void teamPlayerJoin(PlayerJoinedPartyTeamEvent event) {
         Team team = event.getTeam();
-        if (team.getType() != TeamType.PARTY || team.getOwner() == event.getPlayer().getUUID()) {
+        ServerPlayer serverPlayer = event.getPlayer();
+        if (team.getType() != TeamType.PARTY || team.getOwner() == serverPlayer.getUUID()) {
             return;
         }
 
@@ -69,10 +70,14 @@ public class DimensionsMain {
             return;
         }
 
-        BlockPos blockPos = DimensionStorage.get(event.getPlayer().server).getDimensionSpawnLocation(dimension.location());
+        BlockPos blockPos = DimensionStorage.get(serverPlayer.server).getDimensionSpawnLocation(dimension.location());
         if (blockPos != null) {
-            event.getPlayer().setRespawnPosition(dimension, blockPos, 0, true, false);
-            DynamicDimensionManager.teleport(event.getPlayer(), dimension);
+            if (FTBDimensionsConfig.COMMON_GENERAL.clearPlayerInventoryOnJoin.get()) {
+                DimensionUtils.clearPlayerInventory(serverPlayer);
+            }
+
+            serverPlayer.setRespawnPosition(dimension, blockPos, 0, true, false);
+            DynamicDimensionManager.teleport(serverPlayer, dimension);
         }
     }
 
@@ -146,10 +151,8 @@ public class DimensionsMain {
                 return;
             }
 
-            if (FTBDimensionsConfig.COMMON_GENERAL.clearPlayerInventory.get()) {
-                serverPlayer.getInventory().clearOrCountMatchingItems(arg -> true, -1, serverPlayer.inventoryMenu.getCraftSlots());
-                serverPlayer.containerMenu.broadcastChanges();
-                serverPlayer.inventoryMenu.slotsChanged(serverPlayer.getInventory());
+            if (FTBDimensionsConfig.COMMON_GENERAL.clearPlayerInventoryOnLeave.get()) {
+                DimensionUtils.clearPlayerInventory(serverPlayer);
             }
 
             if (event.getTeamDeleted()) {
@@ -207,4 +210,5 @@ public class DimensionsMain {
             player.setGameMode(GameType.SURVIVAL);
         }
     }
+
 }
