@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbteamdimensions;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.GameType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
@@ -36,6 +37,9 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.BooleanValue teamSpecificNetherEntryPoint;
         public final ForgeConfigSpec.BooleanValue placeEntitiesInStartStructure;
         public final ForgeConfigSpec.IntValue replaceColdBiomesNearSpawn;
+        public final ForgeConfigSpec.EnumValue<GameType> lobbyGameMode;
+        public final ForgeConfigSpec.BooleanValue allowLobbyDamages;
+
 
         public CategoryCommonGeneral() {
             COMMON_BUILDER.push("general");
@@ -79,6 +83,14 @@ public class FTBDimensionsConfig {
             this.replaceColdBiomesNearSpawn = COMMON_BUILDER
                     .comment("If > 0, any chunk closer than this to spawn with a cold biome (i.e. water can freeze) in its X/Z midpoint will have its biome replaced with 'minecraft:plains'. Set to 0 to disable all replacement.")
                     .defineInRange("replaceColdBiomesNearSpawn", 64, 0, Integer.MAX_VALUE);
+
+            this.lobbyGameMode = COMMON_BUILDER
+                    .comment("Define the gamemode attributed to players when in the lobby")
+                    .defineEnum("lobbyGameMode", GameType.ADVENTURE);
+
+            this.allowLobbyDamages = COMMON_BUILDER
+                    .comment("If true, living entities can deal damages in the lobby")
+                            .define("allowLobbyDamages", false);
 
             COMMON_BUILDER.pop();
         }

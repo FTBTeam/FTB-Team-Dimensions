@@ -91,6 +91,10 @@ public class DimensionsMain {
 
     @SubscribeEvent
     public static void onPlayerDamage(LivingDamageEvent event) {
+        if (FTBDimensionsConfig.COMMON_GENERAL.allowLobbyDamages.get()) {
+            return;
+        }
+
         if (event.getEntity().level.dimension().equals(Level.OVERWORLD) && event.getSource() != DamageSource.OUT_OF_WORLD) {
             event.setCanceled(true);
         }
@@ -192,18 +196,19 @@ public class DimensionsMain {
     }
 
     /**
-     * When entering the overworld (lobby) the player will be switch to Adventure mode as long as they're not in creative mode,
-     * upon the overworld whilst the game mode is set to adventure, we'll switch back to survival
+     * When entering the overworld (lobby) the player will be switched to the lobby game mode as long as they're not in creative mode,
+     * upon the overworld whilst the game mode is set to the lobby game mode, we'll switch back to survival
      *
      * @param dimension dimension entering from or leaving
      * @param player    the player leaving or entering a dimension.
      */
     private static void swapGameMode(ResourceKey<Level> dimension, ServerPlayer player) {
-        if (dimension.location().equals(OVERWORLD) && player.gameMode.getGameModeForPlayer() != GameType.ADVENTURE && player.gameMode.getGameModeForPlayer() != GameType.CREATIVE) {
-            player.setGameMode(GameType.ADVENTURE);
+        GameType lobbyGameMode = FTBDimensionsConfig.COMMON_GENERAL.lobbyGameMode.get();
+        if (dimension.location().equals(OVERWORLD) && player.gameMode.getGameModeForPlayer() != lobbyGameMode && player.gameMode.getGameModeForPlayer() != GameType.CREATIVE) {
+            player.setGameMode(lobbyGameMode);
         }
 
-        if (!dimension.location().equals(OVERWORLD) && player.gameMode.getGameModeForPlayer() == GameType.ADVENTURE) {
+        if (!dimension.location().equals(OVERWORLD) && player.gameMode.getGameModeForPlayer() == lobbyGameMode) {
             player.setGameMode(GameType.SURVIVAL);
         }
     }
