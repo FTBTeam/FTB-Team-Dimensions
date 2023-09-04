@@ -63,6 +63,14 @@ public class FTBDimensionsConfig {
                     .comment("Y position at which the lobby structure will be pasted into the overworld. Note: too near world min/max build height may result in parts of the structure being cut off, beware.")
                     .defineInRange("lobbyYposition", 0, -64, 256);
 
+            this.lobbyGameMode = COMMON_BUILDER
+                    .comment("Define the gamemode attributed to players when in the lobby")
+                    .defineEnum("lobbyGameMode", GameType.ADVENTURE);
+
+            this.allowLobbyDamages = COMMON_BUILDER
+                    .comment("If true, living entities can deal damages in the lobby")
+                    .define("allowLobbyDamages", false);
+
             COMMON_BUILDER.pop();
 
             COMMON_BUILDER.push("nether");
@@ -102,14 +110,6 @@ public class FTBDimensionsConfig {
             this.replaceColdBiomesNearSpawn = COMMON_BUILDER
                     .comment("If > 0, any chunk closer than this distance from spawn, with a cold biome (i.e. water can freeze) in its X/Z midpoint, will have its biome replaced with the biome defined in 'replaceColdBiomeId'. Set to 0 to disable all replacement.")
                     .defineInRange("replaceColdBiomesNearSpawn", 64, 0, Integer.MAX_VALUE);
-
-            this.lobbyGameMode = COMMON_BUILDER
-                    .comment("Define the gamemode attributed to players when in the lobby")
-                    .defineEnum("lobbyGameMode", GameType.ADVENTURE);
-
-            this.allowLobbyDamages = COMMON_BUILDER
-                    .comment("If true, living entities can deal damages in the lobby")
-                            .define("allowLobbyDamages", false);
 
             this.replaceColdBiomeId = COMMON_BUILDER
                     .comment("Id of the biome which will be used to replace cold biomes near spawn (see 'replaceColdBiomesNearSpawn')")
