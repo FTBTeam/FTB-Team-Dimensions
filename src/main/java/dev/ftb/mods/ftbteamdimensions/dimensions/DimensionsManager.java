@@ -70,6 +70,9 @@ public enum DimensionsManager {
 
         ResourceKey<Level> key = DimensionStorage.get(player.server).putDimension(playerTeam, dimensionName);
 
+        // Check for pregen'd MCA files and copy them into where the dimension will be generated
+        Pregen.copyIfExists(player.server, prebuiltId, key);
+
         ServerLevel serverLevel = DynamicDimensionManager.create(player.server, key, prebuiltId);
 
         // Attempt to load the structure and get the spawn location of the island / structure
