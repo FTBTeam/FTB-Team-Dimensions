@@ -9,10 +9,15 @@ import net.minecraft.world.level.storage.LevelResource;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class Pregen {
     private static final Path PREGEN_PATH = Path.of(FTBTeamDimensions.MOD_ID, "pregen");
+    private static final Path PREGEN_STARTUP_PATH = Path.of(FTBTeamDimensions.MOD_ID, "pregen_startup");
+
+    private static final List<String> STARTUP_SUBDIRS = List.of("region", "entities", "poi", "DIM1", "DIM-1");
 
     public static void copyIfExists(MinecraftServer server, ResourceLocation prebuiltId, ResourceKey<Level> levelKey) {
         Path rootDir = server.getServerDirectory().toPath();
@@ -34,6 +39,26 @@ public class Pregen {
         } catch (IOException e) {
             FTBTeamDimensions.LOGGER.error("Failed to copy pregen MCA files from {} to {}: {}", pregenDir, destDir, e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    public static void maybeDoStartupPregen(MinecraftServer server) {
+        Path startupPath = server.getServerDirectory().toPath().resolve(PREGEN_STARTUP_PATH);
+        Path worldPath = server.getWorldPath(LevelResource.ROOT);
+        if (Files.isDirectory(startupPath) && !Files.isDirectory(worldPath.resolve("region"))) {
+            // looks like a brand-new world, just created - copy over any pregen MCA files for overworld/nether/end if they exist
+            for (String subDir : STARTUP_SUBDIRS) {
+                Path srcDir = startupPath.resolve(subDir);
+                Path destDir = worldPath.resolve(subDir);
+                if (Files.isDirectory(srcDir) && !Files.isDirectory(destDir)) {
+                    try {
+                        FileUtils.copyDirectory(srcDir.toFile(), destDir.toFile());
+                        FTBTeamDimensions.LOGGER.info("Copied startup pregen MCA files from {} to {}", srcDir, destDir);
+                    } catch (IOException e) {
+                        FTBTeamDimensions.LOGGER.error("Failed to copy startup pregen MCA files from {} to {}: {}", srcDir, destDir, e.getMessage());
+                    }
+                }
+            }
         }
     }
 }

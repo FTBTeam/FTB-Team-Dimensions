@@ -2,10 +2,7 @@ package dev.ftb.mods.ftbteamdimensions;
 
 import dev.ftb.mods.ftbteamdimensions.client.DimensionsClient;
 import dev.ftb.mods.ftbteamdimensions.commands.FTBDimensionsCommands;
-import dev.ftb.mods.ftbteamdimensions.dimensions.BiomeReplacementUtils;
-import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionUtils;
-import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsMain;
-import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
+import dev.ftb.mods.ftbteamdimensions.dimensions.*;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
@@ -33,6 +30,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.level.SleepFinishedTimeEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -70,6 +68,7 @@ public class FTBTeamDimensions {
         MinecraftForge.EVENT_BUS.addListener(this::reloadListener);
         MinecraftForge.EVENT_BUS.addListener(this::dimensionChanged);
         MinecraftForge.EVENT_BUS.addListener(this::entityJoinLevel);
+        MinecraftForge.EVENT_BUS.addListener(this::onLevelLoad);
         MinecraftForge.EVENT_BUS.addListener(this::onChunkLoad);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::onSleepFinished);
 
@@ -128,6 +127,12 @@ public class FTBTeamDimensions {
                 VoidTeamDimension.INSTANCE.sendTo(sp);
             }
 
+        }
+    }
+
+    private void onLevelLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof Level level && !level.isClientSide && level.dimension() == Level.OVERWORLD && level.getServer() != null) {
+            Pregen.maybeDoStartupPregen(level.getServer());
         }
     }
 
