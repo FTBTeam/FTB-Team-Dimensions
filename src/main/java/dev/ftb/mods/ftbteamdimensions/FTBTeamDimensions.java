@@ -132,7 +132,7 @@ public class FTBTeamDimensions {
 
     private void onLevelLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof Level level && !level.isClientSide && level.dimension() == Level.OVERWORLD && level.getServer() != null) {
-            Pregen.maybeDoStartupPregen(level.getServer());
+            Pregen.maybeDoInitialPregen(level.getServer());
         }
     }
 

@@ -15,9 +15,9 @@ import java.util.List;
 
 public class Pregen {
     private static final Path PREGEN_PATH = Path.of(FTBTeamDimensions.MOD_ID, "pregen");
-    private static final Path PREGEN_STARTUP_PATH = Path.of(FTBTeamDimensions.MOD_ID, "pregen_startup");
+    private static final Path PREGEN_INITIAL_PATH = Path.of(FTBTeamDimensions.MOD_ID, "pregen_initial");
 
-    private static final List<String> STARTUP_SUBDIRS = List.of("region", "entities", "poi", "DIM1", "DIM-1");
+    private static final List<String> INITIAL_SUBDIRS = List.of("region", "entities", "poi", "DIM1", "DIM-1");
 
     public static void copyIfExists(MinecraftServer server, ResourceLocation prebuiltId, ResourceKey<Level> levelKey) {
         Path rootDir = server.getServerDirectory().toPath();
@@ -42,20 +42,20 @@ public class Pregen {
         }
     }
 
-    public static void maybeDoStartupPregen(MinecraftServer server) {
-        Path startupPath = server.getServerDirectory().toPath().resolve(PREGEN_STARTUP_PATH);
+    public static void maybeDoInitialPregen(MinecraftServer server) {
+        Path initialPath = server.getServerDirectory().toPath().resolve(PREGEN_INITIAL_PATH);
         Path worldPath = server.getWorldPath(LevelResource.ROOT);
-        if (Files.isDirectory(startupPath) && !Files.isDirectory(worldPath.resolve("region"))) {
+        if (Files.isDirectory(initialPath) && !Files.isDirectory(worldPath.resolve("region"))) {
             // looks like a brand-new world, just created - copy over any pregen MCA files for overworld/nether/end if they exist
-            for (String subDir : STARTUP_SUBDIRS) {
-                Path srcDir = startupPath.resolve(subDir);
+            for (String subDir : INITIAL_SUBDIRS) {
+                Path srcDir = initialPath.resolve(subDir);
                 Path destDir = worldPath.resolve(subDir);
                 if (Files.isDirectory(srcDir) && !Files.isDirectory(destDir)) {
                     try {
                         FileUtils.copyDirectory(srcDir.toFile(), destDir.toFile());
-                        FTBTeamDimensions.LOGGER.info("Copied startup pregen MCA files from {} to {}", srcDir, destDir);
+                        FTBTeamDimensions.LOGGER.info("Copied initial pregen MCA files from {} to {}", srcDir, destDir);
                     } catch (IOException e) {
-                        FTBTeamDimensions.LOGGER.error("Failed to copy startup pregen MCA files from {} to {}: {}", srcDir, destDir, e.getMessage());
+                        FTBTeamDimensions.LOGGER.error("Failed to copy initial MCA files from {} to {}: {}", srcDir, destDir, e.getMessage());
                     }
                 }
             }
