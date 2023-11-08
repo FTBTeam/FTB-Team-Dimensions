@@ -1,5 +1,6 @@
 package dev.ftb.mods.ftbteamdimensions;
 
+import dev.ftb.mods.ftbteamdimensions.dimensions.level.chunkgen.ChunkGenerators;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -27,24 +28,30 @@ public class FTBDimensionsConfig {
     }
 
     public static class CategoryCommonGeneral {
-        public final ForgeConfigSpec.BooleanValue clearPlayerInventory;
+        public final ForgeConfigSpec.BooleanValue clearPlayerInventoryOnLeave;
+        public final ForgeConfigSpec.BooleanValue clearPlayerInventoryOnJoin;
         public final ForgeConfigSpec.ConfigValue<String> lobbyStructure;
         public final ForgeConfigSpec.IntValue lobbyYposition;
         public final ForgeConfigSpec.BooleanValue allowNetherPortals;
-        public final ForgeConfigSpec.BooleanValue singleBiomeDimension;
-        public final ForgeConfigSpec.BooleanValue allowVoidFeatureGen;
-        public final ForgeConfigSpec.ConfigValue<String> singleBiomeName;
+        public final ForgeConfigSpec.EnumValue<FeatureGeneration> allowFeatureGen;
+        public final ForgeConfigSpec.ConfigValue<String> singleBiomeId;
+        public final ForgeConfigSpec.ConfigValue<String> noiseSettings;
+        public final ForgeConfigSpec.EnumValue<ChunkGenerators> chunkGenerator;
         public final ForgeConfigSpec.BooleanValue teamSpecificNetherEntryPoint;
         public final ForgeConfigSpec.BooleanValue placeEntitiesInStartStructure;
         public final ForgeConfigSpec.IntValue replaceColdBiomesNearSpawn;
         public final ForgeConfigSpec.EnumValue<GameType> lobbyGameMode;
         public final ForgeConfigSpec.BooleanValue allowLobbyDamages;
-
+        public final ForgeConfigSpec.ConfigValue<String> replaceColdBiomeId;
 
         public CategoryCommonGeneral() {
             COMMON_BUILDER.push("general");
 
-            this.clearPlayerInventory = COMMON_BUILDER
+            this.clearPlayerInventoryOnJoin = COMMON_BUILDER
+                    .comment("When set to true, the player's inventory will be cleared when joining a team")
+                    .define("clearPlayerInventoryOnJoin", false);
+
+            this.clearPlayerInventoryOnLeave = COMMON_BUILDER
                     .comment("When set to true, the players inventory will be cleared when leaving a team")
                     .define("clearPlayerInventory", true);
 
@@ -56,41 +63,57 @@ public class FTBDimensionsConfig {
                     .comment("Y position at which the lobby structure will be pasted into the overworld. Note: too near world min/max build height may result in parts of the structure being cut off, beware.")
                     .defineInRange("lobbyYposition", 0, -64, 256);
 
-            this.allowNetherPortals = COMMON_BUILDER
-                    .comment("When set to true, nether portals may be constructed in team dimensions")
-                    .define("allowNetherPortals", true);
-
-            this.allowVoidFeatureGen = COMMON_BUILDER
-                    .comment("When set to false, no features may generate in void dimensions. If this set to true, some features (e.g. icebergs) will generate in applicable biomes without any checks for surrounding blocks (like water). Changing this will *not* affect any already-generated chunks.")
-                    .define("allowVoidFeatureGen", false);
-
-            this.singleBiomeDimension = COMMON_BUILDER
-                    .comment("If true, generate a void dimension with only a single biome. Otherwise, generate a void dimension with overworld-like biome distribution")
-                    .define("singleBiomeDimension", false);
-
-            this.singleBiomeName = COMMON_BUILDER
-                    .comment("If 'singleBiomeDimension' is true, this is the ID of the biome to generate")
-                    .define("singleBiomeName", "minecraft:the_void");
-
-            this.teamSpecificNetherEntryPoint = COMMON_BUILDER
-                    .comment("If true, then players going to the Nether via Nether Portal will be sent to a team-specific position in the Nether")
-                    .define("teamSpecificNetherEntryPoint", true);
-
-            this.placeEntitiesInStartStructure = COMMON_BUILDER
-                    .comment("If true, then any entities saved in the starting structure NBT will be included when the structure is generated")
-                    .define("placeEntitiesInStartStructure", true);
-
-            this.replaceColdBiomesNearSpawn = COMMON_BUILDER
-                    .comment("If > 0, any chunk closer than this to spawn with a cold biome (i.e. water can freeze) in its X/Z midpoint will have its biome replaced with 'minecraft:plains'. Set to 0 to disable all replacement.")
-                    .defineInRange("replaceColdBiomesNearSpawn", 64, 0, Integer.MAX_VALUE);
-
             this.lobbyGameMode = COMMON_BUILDER
                     .comment("Define the gamemode attributed to players when in the lobby")
                     .defineEnum("lobbyGameMode", GameType.ADVENTURE);
 
             this.allowLobbyDamages = COMMON_BUILDER
                     .comment("If true, living entities can deal damages in the lobby")
-                            .define("allowLobbyDamages", false);
+                    .define("allowLobbyDamages", false);
+
+            COMMON_BUILDER.pop();
+
+            COMMON_BUILDER.push("nether");
+
+            this.allowNetherPortals = COMMON_BUILDER
+                    .comment("When set to true, nether portals may be constructed in team dimensions")
+                    .define("allowNetherPortals", true);
+
+            this.teamSpecificNetherEntryPoint = COMMON_BUILDER
+                    .comment("If true, then players going to the Nether via Nether Portal will be sent to a team-specific position in the Nether")
+                    .define("teamSpecificNetherEntryPoint", true);
+
+            COMMON_BUILDER.pop();
+
+            COMMON_BUILDER.push("worldgen");
+
+            this.chunkGenerator = COMMON_BUILDER
+                    .comment("Resource location for the chunk generator to use. SIMPLE_VOID (void dim, one biome), MULTI_BIOME_VOID (void dim, overworld-like biome distribution) and CUSTOM (full worldgen, customisable biome source & noise settings)")
+                    .defineEnum("chunkGenerator", ChunkGenerators.MULTI_BIOME_VOID);
+
+            this.allowFeatureGen = COMMON_BUILDER
+                    .comment("DEFAULT: generate features in non-void worlds, don't generate in void worlds; NEVER: never generate; ALWAYS: always generate")
+                    .defineEnum("allowFeatureGen", FeatureGeneration.DEFAULT);
+
+            this.singleBiomeId = COMMON_BUILDER
+                    .comment("Only used by the CUSTOM and SIMPLE_VOID generators; if non-empty (e.g. 'minecraft:the_void'), the dimension will generate with only this biome. If empty, CUSTOM generator will use an overworld-like biome distribution, and SIMPLE_VOID will use 'minecraft:the_void'")
+                    .define("singleBiomeId", "");
+
+            this.noiseSettings = COMMON_BUILDER
+                    .comment("Only used by the CUSTOM generator; resource location for the noise settings to use.")
+                    .define("customNoiseSettings", "minecraft:overworld");
+
+            this.placeEntitiesInStartStructure = COMMON_BUILDER
+                    .comment("If true, then any entities saved in the starting structure NBT will be included when the structure is generated")
+                    .define("placeEntitiesInStartStructure", true);
+
+            this.replaceColdBiomesNearSpawn = COMMON_BUILDER
+                    .comment("If > 0, any chunk closer than this distance from spawn, with a cold biome (i.e. water can freeze) in its X/Z midpoint, will have its biome replaced with the biome defined in 'replaceColdBiomeId'. Set to 0 to disable all replacement.")
+                    .defineInRange("replaceColdBiomesNearSpawn", 64, 0, Integer.MAX_VALUE);
+
+            this.replaceColdBiomeId = COMMON_BUILDER
+                    .comment("Id of the biome which will be used to replace cold biomes near spawn (see 'replaceColdBiomesNearSpawn')")
+                    .define("replaceColdBiomeId", "minecraft:plains");
 
             COMMON_BUILDER.pop();
         }
@@ -118,4 +141,15 @@ public class FTBDimensionsConfig {
             CLIENT_BUILDER.pop();
         }
     }
+
+    public enum FeatureGeneration {
+        DEFAULT,
+        NEVER,
+        ALWAYS;
+
+        public boolean shouldGenerate(boolean isVoid) {
+            return this == ALWAYS || this == DEFAULT && !isVoid;
+        }
+    }
+
 }

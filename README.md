@@ -88,3 +88,48 @@ The default overworld lobby structure is at `data/ftbteamdimensions/structures/l
 in one of two ways:
 * in mod config (see `lobbyStructure` in `ftbteamdimensions-common.toml`)
 * or simply overwrite it via datapack!
+
+## Dimension Pre-gen
+
+Creating dimensions on the fly can be an expensive operation, and that can cause problems on a live server, with players
+potentially experiencing significant lag. To mitigate this, a method has been added to pre-generate dimensions where 
+possible, by copying in a known set of region (or entity or POI) MCA files from a template directory into the live
+dimension directory just before the dimension is created. In that way, the server sees existing MCA files for the
+initial regions and can skip CPU-expensive worldgen for them.
+
+This feature works well for void dimensions, and for non-void dimension where the terrain is predictable, i.e. using
+a fixed seed. It's not suitable for dimensions where terrain generation can't be easily predicted.
+
+To set up pre-gen for a dimension:
+* Take the MCA files from a newly-generated dynamic dimension; you must include the `region/*.mca` files at a minimum, and optionally also any `entities/*.mca` and `poi/*.mca` files
+* Take the prebuilt ID for the dynamic dimension, which is the `id` field from the `ftbdim_prebuilt_structures` JSON file described above
+* Turn this resource location into a directory path, e.g. `ftbteamdimensions:island1` becomes `ftbteamdimensions/island1`
+* Copy these files into `<instance-dir>/ftbteamdimensions/pregen/<path>` where `<path>` is the path you got in the last step, and `<instance-dir>` is the root-level directory for your game instance, i.e. the directory where your `world/` directory lives.
+
+For the `ftbteamdimensions:island1` example, you should have something like:
+
+```
+$ ls
+banned-ips.json      config         defaultconfigs  ftbteamdimensions  mods      options.txt    resources  screenshots        usercache.json      whitelist.json
+banned-players.json  crash-reports  eula.txt        logs               ops.json  resourcepacks  saves      server.properties  usernamecache.json  world
+
+$ ls -R ftbteamdimensions
+ftbteamdimensions:
+pregen
+
+ftbteamdimensions/pregen:
+ftbteamdimensions
+
+ftbteamdimensions/pregen/ftbteamdimensions:
+island1
+
+ftbteamdimensions/pregen/ftbteamdimensions/island1:
+region
+
+ftbteamdimensions/pregen/ftbteamdimensions/island1/region:
+r.0.0.mca   r.0.1.mca   r.-1.0.mca  r.-1.-1.mca  r.1.-1.mca  r.-1.-2.mca  r.-2.0.mca   r.-2.1.mca
+r.0.-1.mca  r.0.-2.mca  r.1.0.mca   r.-1.1.mca   r.1.1.mca   r.1.-2.mca   r.-2.-1.mca  r.-2.-2.mca
+```
+
+Right before a dynamic dimension is created, the mod will check for the existence of this directory, and if it exists for the
+prebuilt structure ID being used, will copy those files across to `<instance>/world/dimensions/ftbteamdimensions/team/<UUID>`.

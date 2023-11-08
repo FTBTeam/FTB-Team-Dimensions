@@ -2,10 +2,7 @@ package dev.ftb.mods.ftbteamdimensions;
 
 import dev.ftb.mods.ftbteamdimensions.client.DimensionsClient;
 import dev.ftb.mods.ftbteamdimensions.commands.FTBDimensionsCommands;
-import dev.ftb.mods.ftbteamdimensions.dimensions.BiomeReplacementUtils;
-import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionUtils;
-import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsMain;
-import dev.ftb.mods.ftbteamdimensions.dimensions.DimensionsManager;
+import dev.ftb.mods.ftbteamdimensions.dimensions.*;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionStorage;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DynamicDimensionManager;
 import dev.ftb.mods.ftbteamdimensions.dimensions.prebuilt.PrebuiltStructureManager;
@@ -17,6 +14,7 @@ import dev.ftb.mods.ftbteamdimensions.registry.ModWorldGen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,7 +22,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -33,6 +30,7 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.level.SleepFinishedTimeEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -70,6 +68,7 @@ public class FTBTeamDimensions {
         MinecraftForge.EVENT_BUS.addListener(this::reloadListener);
         MinecraftForge.EVENT_BUS.addListener(this::dimensionChanged);
         MinecraftForge.EVENT_BUS.addListener(this::entityJoinLevel);
+        MinecraftForge.EVENT_BUS.addListener(this::onLevelLoad);
         MinecraftForge.EVENT_BUS.addListener(this::onChunkLoad);
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::onSleepFinished);
 
@@ -131,6 +130,12 @@ public class FTBTeamDimensions {
         }
     }
 
+    private void onLevelLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof Level level && !level.isClientSide && level.dimension() == Level.OVERWORLD && level.getServer() != null) {
+            Pregen.maybeDoInitialPregen(level.getServer());
+        }
+    }
+
     private void onChunkLoad(ChunkEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel level && DimensionUtils.isTeamDimension(level) && FTBDimensionsConfig.COMMON_GENERAL.replaceColdBiomesNearSpawn.get() > 0) {
             BlockPos spawnPos = DimensionStorage.get(level.getServer()).getDimensionSpawnLocation(level.dimension().location());
@@ -139,12 +144,13 @@ public class FTBTeamDimensions {
                 BlockPos pos1 = chunkPos.getMiddleBlockPosition(spawnPos.getY());
                 int threshold = (int) Math.pow(FTBDimensionsConfig.COMMON_GENERAL.replaceColdBiomesNearSpawn.get(), 2);
                 if (pos1.distSqr(spawnPos) < threshold && level.getBiome(pos1).value().coldEnoughToSnow(pos1)) {
-                    Holder<Biome> plains = level.registryAccess().registry(Registry.BIOME_REGISTRY).orElseThrow()
-                            .getHolderOrThrow(Biomes.PLAINS);
+                    ResourceKey<Biome> biomeKey = ResourceKey.create(Registry.BIOME_REGISTRY,
+                            new ResourceLocation(FTBDimensionsConfig.COMMON_GENERAL.replaceColdBiomeId.get()));
+                    Holder<Biome> replacement = level.registryAccess().registry(Registry.BIOME_REGISTRY).orElseThrow().getHolderOrThrow(biomeKey);
                     BlockPos from = new BlockPos(chunkPos.getMinBlockX(), level.getMinBuildHeight(), chunkPos.getMinBlockZ());
                     BlockPos to = new BlockPos(chunkPos.getMaxBlockX(), level.getMaxBuildHeight(), chunkPos.getMaxBlockZ());
                     level.getServer().executeIfPossible(() ->
-                            BiomeReplacementUtils.replaceBiome(level, event.getChunk(), from , to, plains)
+                            BiomeReplacementUtils.replaceBiome(level, event.getChunk(), from , to, replacement)
                     );
                 }
             }

@@ -58,11 +58,13 @@ public class SimpleVoidChunkGenerator extends FlatLevelSource implements Prebuil
         HolderSet<StructureSet> structures = structureSetRegistry.getOrCreateTag(TagKey.create(Registry.STRUCTURE_SET_REGISTRY, structureSetId));
 
         Registry<Biome> biomeRegistry = registryAccess.registryOrThrow(Registry.BIOME_REGISTRY);
-        ResourceKey<Biome> biomeKey = ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(FTBDimensionsConfig.COMMON_GENERAL.singleBiomeName.get()));
+        String biomeStr = FTBDimensionsConfig.COMMON_GENERAL.singleBiomeId.get();
+        if (biomeStr.isEmpty()) biomeStr = "minecraft:the_void";
+        ResourceKey<Biome> biomeKey = ResourceKey.create(Registry.BIOME_REGISTRY, new ResourceLocation(biomeStr));
 
         FlatLevelGeneratorSettings settings = new FlatLevelGeneratorSettings(Optional.empty(), biomeRegistry)
                 .withLayers(List.of(new FlatLayerInfo(1, Blocks.AIR)), Optional.of(structures));
-        settings.setBiome(biomeRegistry.getOrCreateHolder(biomeKey).result().orElseThrow());
+        settings.setBiome(biomeRegistry.getHolderOrThrow(biomeKey));
 
         return new SimpleVoidChunkGenerator(structureSetRegistry, settings, prebuiltStructureId);
     }

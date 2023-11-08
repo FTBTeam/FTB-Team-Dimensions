@@ -1,6 +1,7 @@
 package dev.ftb.mods.ftbteamdimensions.dimensions;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.ftb.mods.ftbteamdimensions.FTBDimensionsConfig;
 import dev.ftb.mods.ftbteamdimensions.FTBTeamDimensions;
 import dev.ftb.mods.ftbteamdimensions.commands.FTBDimensionsCommands;
 import dev.ftb.mods.ftbteamdimensions.dimensions.level.DimensionStorage;
@@ -69,6 +70,9 @@ public enum DimensionsManager {
 
         ResourceKey<Level> key = DimensionStorage.get(player.server).putDimension(playerTeam, dimensionName);
 
+        // Check for pregen'd MCA files and copy them into where the dimension will be generated
+        Pregen.copyIfExists(player.server, prebuiltId, key);
+
         ServerLevel serverLevel = DynamicDimensionManager.create(player.server, key, prebuiltId);
 
         // Attempt to load the structure and get the spawn location of the island / structure
@@ -88,7 +92,9 @@ public enum DimensionsManager {
         player.setRespawnPosition(key, spawnPoint, 0, true, false);
         DynamicDimensionManager.teleport(player, key);
 
-        player.getInventory().clearContent();
+        if (FTBDimensionsConfig.COMMON_GENERAL.clearPlayerInventoryOnJoin.get()) {
+            DimensionUtils.clearPlayerInventory(player);
+        }
         player.heal(player.getMaxHealth());
         FoodData foodData = player.getFoodData();
         foodData.setExhaustion(0);
