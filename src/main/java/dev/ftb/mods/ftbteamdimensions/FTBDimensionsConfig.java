@@ -39,10 +39,11 @@ public class FTBDimensionsConfig {
         public final ForgeConfigSpec.EnumValue<ChunkGenerators> chunkGenerator;
         public final ForgeConfigSpec.BooleanValue teamSpecificNetherEntryPoint;
         public final ForgeConfigSpec.BooleanValue placeEntitiesInStartStructure;
-        public final ForgeConfigSpec.IntValue replaceColdBiomesNearSpawn;
+        public final ForgeConfigSpec.BooleanValue replaceColdBiomesOnly;
+        public final ForgeConfigSpec.IntValue replaceBiomesNearSpawn;
         public final ForgeConfigSpec.EnumValue<GameType> lobbyGameMode;
         public final ForgeConfigSpec.BooleanValue allowLobbyDamages;
-        public final ForgeConfigSpec.ConfigValue<String> replaceColdBiomeId;
+        public final ForgeConfigSpec.ConfigValue<String> replaceBiomeId;
 
         public CategoryCommonGeneral() {
             COMMON_BUILDER.push("general");
@@ -107,13 +108,17 @@ public class FTBDimensionsConfig {
                     .comment("If true, then any entities saved in the starting structure NBT will be included when the structure is generated")
                     .define("placeEntitiesInStartStructure", true);
 
-            this.replaceColdBiomesNearSpawn = COMMON_BUILDER
-                    .comment("If > 0, any chunk closer than this distance from spawn, with a cold biome (i.e. water can freeze) in its X/Z midpoint, will have its biome replaced with the biome defined in 'replaceColdBiomeId'. Set to 0 to disable all replacement.")
-                    .defineInRange("replaceColdBiomesNearSpawn", 64, 0, Integer.MAX_VALUE);
+            this.replaceBiomesNearSpawn = COMMON_BUILDER
+                    .comment("If > 0, any chunk closer than this distance from spawn will have its biome replaced with the biome defined in 'replaceBiomeId'. Set to 0 to disable all replacement.")
+                    .defineInRange("replaceColdBiomesNearSpawn", 0, 0, Integer.MAX_VALUE);
 
-            this.replaceColdBiomeId = COMMON_BUILDER
-                    .comment("Id of the biome which will be used to replace cold biomes near spawn (see 'replaceColdBiomesNearSpawn')")
-                    .define("replaceColdBiomeId", "minecraft:plains");
+            this.replaceColdBiomesOnly = COMMON_BUILDER
+                    .comment("If true (and 'replaceBiomesNearSpawn' > 0), only cold biomes near spawn (i.e. water can freeze) will be replaced with the biome defined in 'replaceBiomeId'.")
+                    .define("replaceColdBiomesOnly", true);
+
+            this.replaceBiomeId = COMMON_BUILDER
+                    .comment("Id of the biome which will be used to replace biomes near spawn (see 'replaceBiomesNearSpawn')")
+                    .define("replaceBiomeId", "minecraft:plains");
 
             COMMON_BUILDER.pop();
         }
