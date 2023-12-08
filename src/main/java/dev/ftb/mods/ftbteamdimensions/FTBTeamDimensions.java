@@ -137,24 +137,29 @@ public class FTBTeamDimensions {
     }
 
     private void onChunkLoad(ChunkEvent.Load event) {
-        if (event.getLevel() instanceof ServerLevel level && DimensionUtils.isTeamDimension(level) && FTBDimensionsConfig.COMMON_GENERAL.replaceColdBiomesNearSpawn.get() > 0) {
+        FTBDimensionsConfig.CategoryCommonGeneral general = FTBDimensionsConfig.COMMON_GENERAL;
+        if (event.getLevel() instanceof ServerLevel level && DimensionUtils.isTeamDimension(level) && general.replaceBiomesNearSpawn.get() > 0) {
             BlockPos spawnPos = DimensionStorage.get(level.getServer()).getDimensionSpawnLocation(level.dimension().location());
             if (spawnPos != null) {
                 ChunkPos chunkPos = event.getChunk().getPos();
                 BlockPos pos1 = chunkPos.getMiddleBlockPosition(spawnPos.getY());
-                int threshold = (int) Math.pow(FTBDimensionsConfig.COMMON_GENERAL.replaceColdBiomesNearSpawn.get(), 2);
-                if (pos1.distSqr(spawnPos) < threshold && level.getBiome(pos1).value().coldEnoughToSnow(pos1)) {
-                    ResourceKey<Biome> biomeKey = ResourceKey.create(Registry.BIOME_REGISTRY,
-                            new ResourceLocation(FTBDimensionsConfig.COMMON_GENERAL.replaceColdBiomeId.get()));
-                    Holder<Biome> replacement = level.registryAccess().registry(Registry.BIOME_REGISTRY).orElseThrow().getHolderOrThrow(biomeKey);
-                    BlockPos from = new BlockPos(chunkPos.getMinBlockX(), level.getMinBuildHeight(), chunkPos.getMinBlockZ());
-                    BlockPos to = new BlockPos(chunkPos.getMaxBlockX(), level.getMaxBuildHeight(), chunkPos.getMaxBlockZ());
-                    level.getServer().executeIfPossible(() ->
-                            BiomeReplacementUtils.replaceBiome(level, event.getChunk(), from , to, replacement)
-                    );
+                int threshold = (int) Math.pow(general.replaceBiomesNearSpawn.get(), 2);
+                if (pos1.distSqr(spawnPos) < threshold && (!general.replaceColdBiomesOnly.get() || level.getBiome(pos1).value().coldEnoughToSnow(pos1))) {
+                    doReplacement(event, level, chunkPos);
                 }
             }
         }
+    }
+
+    private static void doReplacement(ChunkEvent.Load event, ServerLevel level, ChunkPos chunkPos) {
+        ResourceKey<Biome> biomeKey = ResourceKey.create(Registry.BIOME_REGISTRY,
+                new ResourceLocation(FTBDimensionsConfig.COMMON_GENERAL.replaceBiomeId.get()));
+        Holder<Biome> replacement = level.registryAccess().registry(Registry.BIOME_REGISTRY).orElseThrow().getHolderOrThrow(biomeKey);
+        BlockPos from = new BlockPos(chunkPos.getMinBlockX(), level.getMinBuildHeight(), chunkPos.getMinBlockZ());
+        BlockPos to = new BlockPos(chunkPos.getMaxBlockX(), level.getMaxBuildHeight(), chunkPos.getMaxBlockZ());
+        level.getServer().executeIfPossible(() ->
+                BiomeReplacementUtils.replaceBiome(level, event.getChunk(), from , to, replacement)
+        );
     }
 
     private void onSleepFinished(final SleepFinishedTimeEvent event) {
