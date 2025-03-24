@@ -109,8 +109,8 @@ public class FTBDimensionsConfig {
                     .define("placeEntitiesInStartStructure", true);
 
             this.replaceBiomesNearSpawn = COMMON_BUILDER
-                    .comment("If > 0, any chunk closer than this distance from spawn will have its biome replaced with the biome defined in 'replaceBiomeId'. Set to 0 to disable all replacement.")
-                    .defineInRange("replaceColdBiomesNearSpawn", 0, 0, Integer.MAX_VALUE);
+                    .comment("If > 0, any chunk whose middle block is closer than this distance (in blocks) from spawn will have its biome replaced with the biome defined in 'replaceBiomeId'. Set to 0 to disable all replacement.")
+                    .defineInRange("replaceBiomesNearSpawn", 0, 0, Integer.MAX_VALUE);
 
             this.replaceColdBiomesOnly = COMMON_BUILDER
                     .comment("If true (and 'replaceBiomesNearSpawn' > 0), only cold biomes near spawn (i.e. water can freeze) will be replaced with the biome defined in 'replaceBiomeId'.")

@@ -97,7 +97,7 @@ public class DynamicDimensionManager {
 		overworld.getWorldBorder().addListener(new BorderChangeListener.DelegateBorderChangeListener(newWorld.getWorldBorder()));
 		map.put(key, newWorld);
 		server.markWorldsDirty();
-		MinecraftForge.EVENT_BUS.post(new LevelEvent(newWorld));
+		MinecraftForge.EVENT_BUS.post(new LevelEvent.Load(newWorld));
 		new UpdateDimensionsList(key, true).sendToAll(server);
 		return newWorld;
 	}
@@ -125,7 +125,7 @@ public class DynamicDimensionManager {
 		}
 
 		removedLevel.save(null, false, removedLevel.noSave());
-		MinecraftForge.EVENT_BUS.post(new LevelEvent(removedLevel));
+		MinecraftForge.EVENT_BUS.post(new LevelEvent.Unload(removedLevel));
 
 		// reset world border listeners if needed
 		WorldBorder overworldBorder = overworld.getWorldBorder();
