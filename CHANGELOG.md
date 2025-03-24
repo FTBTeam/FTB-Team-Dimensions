@@ -4,16 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.6]
+## [1.1.5]
 
 ### Fixed
 * Dynamic dimension creation now fires a Forge `LevelEvent.Load` event instead of just a `LevelEvent`
   * Should fix issues with mods listening for level loading, e.g. Create wireless redstone
-
-## [1.1.5]
-
-### Fixed
-
 * Fixed incorrectly-named config entry: `replaceColdBiomesNearSpawn` really is now `replaceBiomesNearSpawn`!
   * Also clarified the comment on the entry: the distance is in blocks (not chunks)
 
